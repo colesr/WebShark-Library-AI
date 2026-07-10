@@ -1,293 +1,551 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="WebShark Library.AI— a forever-free, one-pass hub for AI, machine learning, and data analytics. Papers, frameworks, datasets, cheat sheets, and community links, all in one place.">
-    <title>WebShark Library.AI | Data Science Resource Hub</title>
-    <style>
-        :root {
-            --primary-color: #3498db;
-            --background-light: #f4f7f9;
-            --text-dark: #333;
-            --card-bg: #ffffff;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--background-light);
-            color: var(--text-dark);
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        header {
-            background-color: var(--primary-color);
-            background-image: radial-gradient(circle at 15% 20%, rgba(255,255,255,0.12) 0, transparent 45%),
-                               radial-gradient(circle at 85% 75%, rgba(255,255,255,0.10) 0, transparent 40%);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-            border-radius: 8px;
-            margin-bottom: 12px;
-        }
-        header h1 {
-            margin: 0;
-            font-size: 2.5em;
-        }
-        header p.tagline {
-            opacity: 0.95;
-            margin-top: 8px;
-            font-size: 1.05em;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
-        header p.subtag {
-            opacity: 0.85;
-            margin-top: 4px;
-            font-size: 0.95em;
-        }
-        .free-banner {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #2980b9;
-            font-size: 0.9em;
-            font-weight: 600;
-        }
-        h2.section-title {
-            margin-top: 40px;
-            margin-bottom: 6px;
-        }
-        p.section-desc {
-            margin-top: 0;
-            color: #555;
-        }
-        .resource-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-        }
-        .resource-card {
-            position: relative;
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-            padding: 25px;
-            transition: transform 0.2s;
-            border-left: 5px solid var(--primary-color);
-        }
-        .resource-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.12);
-        }
-        .resource-card h3 {
-            color: var(--primary-color);
-            margin-top: 0;
-        }
-        .resource-card p {
-            margin-bottom: 20px;
-            color: #555;
-            line-height: 1.4;
-        }
-        .free-badge {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            font-size: 0.7em;
-            font-weight: 700;
-            color: #2980b9;
-            background: #eaf4fc;
-            padding: 3px 8px;
-            border-radius: 20px;
-            letter-spacing: 0.3px;
-        }
-        .cta-link {
-            display: inline-block;
-            background-color: var(--primary-color);
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .cta-link:hover {
-            background-color: #2980b9;
-        }
-        .link-list {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 20px 0;
-        }
-        .link-list li {
-            margin-bottom: 8px;
-        }
-        .link-list a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .link-list a:hover {
-            text-decoration: underline;
-        }
-        footer {
-            text-align: center;
-            margin-top: 50px;
-            padding: 20px;
-            border-top: 1px solid #ddd;
-            color: #777;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="WebShark Library.AI — a forever-free, one-pass, community-built hub for AI, machine learning, and data analytics resources.">
+<title>WebShark Library.AI | Data Science Resource Hub</title>
+<style>
+  :root {
+    --primary-color: #3498db;
+    --background-light: #f4f7f9;
+    --text-dark: #333;
+    --card-bg: #ffffff;
+    --border-soft: #e2e8ee;
+  }
+  body.dark {
+    --background-light: #12161c;
+    --text-dark: #e8edf2;
+    --card-bg: #1b212a;
+    --border-soft: #2a323d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--background-light);
+    color: var(--text-dark);
+    margin: 0;
+    padding: 20px;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
 
-        /* Simple subject category coloring */
-        .ml-card { border-left-color: #e74c3c; }
-        .ai-card { border-left-color: #2ecc71; }
-        .analytics-card { border-left-color: #f39c12; }
-        .mlops-card { border-left-color: #9b59b6; }
-        .data-card { border-left-color: #16a085; }
-        .cheat-card { border-left-color: #d35400; }
-        .community-card { border-left-color: #2c3e50; }
-        .learn-card { border-left-color: #c0392b; }
-        .compute-card { border-left-color: #27ae60; }
+  header {
+    background-color: var(--primary-color);
+    background-image: radial-gradient(circle at 15% 20%, rgba(255,255,255,0.12) 0, transparent 45%),
+                       radial-gradient(circle at 85% 75%, rgba(255,255,255,0.10) 0, transparent 40%);
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  header h1 { margin: 0; font-size: 2.5em; }
+  header p.tagline { opacity: 0.95; margin-top: 8px; font-size: 1.05em; font-weight: 600; }
+  header p.subtag { opacity: 0.85; margin-top: 4px; font-size: 0.95em; }
 
-    </style>
+  .dark-toggle {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(255,255,255,0.18);
+    border: none;
+    color: white;
+    border-radius: 20px;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 0.85em;
+  }
+  .dark-toggle:hover { background: rgba(255,255,255,0.3); }
+
+  .free-banner { text-align: center; margin-bottom: 20px; color: var(--primary-color); font-size: 0.9em; font-weight: 600; }
+
+  .stats-strip {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+    font-size: 0.9em;
+    color: var(--text-dark);
+    opacity: 0.8;
+  }
+  .stats-strip strong { color: var(--primary-color); }
+
+  .controls {
+    background: var(--card-bg);
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 25px;
+  }
+  .controls-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .controls-row:last-child { margin-bottom: 0; }
+  #searchInput {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border-soft);
+    background: var(--background-light);
+    color: var(--text-dark);
+    font-size: 1em;
+  }
+  .btn {
+    padding: 10px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9em;
+  }
+  .btn-primary { background: var(--primary-color); color: white; }
+  .btn-primary:hover { background: #2980b9; }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border-soft);
+    color: var(--text-dark);
+  }
+  .btn-ghost:hover { background: var(--background-light); }
+  .btn-ghost.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+
+  .chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border-soft);
+    background: var(--background-light);
+    color: var(--text-dark);
+    cursor: pointer;
+    font-size: 0.85em;
+    font-weight: 600;
+  }
+  .chip.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+  #chipRow { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .resource-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .resource-card {
+    position: relative;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+    padding: 20px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    border-left: 5px solid var(--primary-color);
+    display: flex;
+    flex-direction: column;
+  }
+  .resource-card:hover { transform: translateY(-4px); box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); }
+  .resource-card h3 { margin: 0 0 6px 0; font-size: 1.05em; padding-right: 30px; }
+  .resource-card .category-tag {
+    display: inline-block;
+    font-size: 0.7em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+  }
+  .resource-card p.desc { margin: 0 0 16px 0; color: var(--text-dark); opacity: 0.75; line-height: 1.4; font-size: 0.9em; flex-grow: 1; }
+  .card-footer { display: flex; justify-content: space-between; align-items: center; }
+  .cta-link {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 0.85em;
+  }
+  .cta-link:hover { background-color: #2980b9; }
+
+  .star-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    color: #ccc;
+    line-height: 1;
+  }
+  .star-btn.favorited { color: #f39c12; }
+
+  .submitted-badge {
+    font-size: 0.65em;
+    font-weight: 700;
+    color: #16a085;
+    background: rgba(22,160,133,0.12);
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .empty-state { text-align: center; padding: 40px 20px; opacity: 0.7; }
+
+  /* Submission form */
+  #submitPanel {
+    background: var(--card-bg);
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+    display: none;
+  }
+  #submitPanel.open { display: block; }
+  #submitPanel h3 { margin-top: 0; }
+  #submitPanel .form-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  #submitPanel input, #submitPanel select, #submitPanel textarea {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-soft);
+    background: var(--background-light);
+    color: var(--text-dark);
+    font-family: inherit;
+    font-size: 0.9em;
+  }
+  #submitPanel textarea { min-height: 60px; resize: vertical; }
+  #submitStatus { font-size: 0.85em; margin-top: 8px; }
+  #submitStatus.success { color: #16a085; }
+  #submitStatus.error { color: #e74c3c; }
+
+  footer { text-align: center; margin-top: 50px; padding: 20px; border-top: 1px solid var(--border-soft); color: var(--text-dark); opacity: 0.6; font-size: 0.85em; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.8em; }
+    .dark-toggle { position: static; display: inline-block; margin-top: 12px; }
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1> WebShark Library.AI</h1>
-            <p class="tagline">Forever Free, One-Pass Ticket to the Universe of Data</p>
-            <p class="subtag">Your resource hub for AI, Machine Learning, and Data Analytics workflows.</p>
-        </header>
-        <p class="free-banner">✦ This is a living library and user inputs help keep us smart ✦</p>
+<div class="container">
+  <header>
+    <button class="dark-toggle" id="darkToggle">🌙 Dark mode</button>
+    <h1>🕸️ WebShark Library.AI</h1>
+    <p class="tagline">Forever Free, One-Pass Ticket to the Universe of Data</p>
+    <p class="subtag">A living library of AI, Machine Learning & Data Analytics resources.</p>
+  </header>
+  <p class="free-banner">✦ This is a living library — everything is free, and you can add to it below ✦</p>
 
-        <h2 class="section-title">Quick Start</h2>
-        <p class="section-desc">Dive into the most critical inputs to optimize your data science workflow, from foundational knowledge to state-of-the-art tools.</p>
+  <div class="stats-strip">
+    <span><strong id="statTotal">0</strong> resources</span>
+    <span><strong id="statCategories">0</strong> categories</span>
+    <span><strong id="statCommunity">0</strong> added by the community</span>
+    <span><strong id="statFavorites">0</strong> in your favorites</span>
+  </div>
 
-        <div class="resource-grid">
-            <!-- AI Category Card -->
-            <div class="resource-card ai-card">
-                <span class="free-badge">FREE</span>
-                <h3>🤖 Cutting-Edge AI Models</h3>
-                <p>Papers and research on the latest large language models, multimodal AI, and generative techniques.</p>
-                <ul class="link-list">
-                    <li><a href="https://arxiv.org/list/cs.LG/recent" target="_blank" rel="noopener">arXiv: Machine Learning (cs.LG)</a></li>
-                    <li><a href="https://paperswithcode.com/" target="_blank" rel="noopener">Papers with Code</a></li>
-                </ul>
-                <a href="https://paperswithcode.com/" class="cta-link" target="_blank" rel="noopener" aria-label="Explore Advanced AI Resources">Launch Into Papers</a>
-            </div>
-
-            <!-- ML Category Card -->
-            <div class="resource-card ml-card">
-                <span class="free-badge">FREE</span>
-                <h3>🧠 Machine Learning Frameworks</h3>
-                <p>Deep dives into the core libraries for model building, hyperparameter tuning, and deployment.</p>
-                <ul class="link-list">
-                    <li><a href="https://pytorch.org/docs/stable/index.html" target="_blank" rel="noopener">PyTorch Docs</a></li>
-                    <li><a href="https://www.tensorflow.org/learn" target="_blank" rel="noopener">TensorFlow Learn</a></li>
-                    <li><a href="https://scikit-learn.org/stable/" target="_blank" rel="noopener">scikit-learn</a></li>
-                    <li><a href="https://huggingface.co/docs/transformers/index" target="_blank" rel="noopener">Hugging Face Transformers</a></li>
-                </ul>
-                <a href="https://pytorch.org/docs/stable/index.html" class="cta-link" target="_blank" rel="noopener" aria-label="Explore ML Libraries">Check Out Tutorials</a>
-            </div>
-
-            <!-- Analytics Category Card -->
-            <div class="resource-card analytics-card">
-                <span class="free-badge">FREE</span>
-                <h3>📊 Data Visualization & BI</h3>
-                <p>Visualization libraries and best practices for telling a clear data story.</p>
-                <ul class="link-list">
-                    <li><a href="https://plotly.com/python/" target="_blank" rel="noopener">Plotly for Python</a></li>
-                    <li><a href="https://observablehq.com/" target="_blank" rel="noopener">Observable</a></li>
-                    <li><a href="https://d3js.org/" target="_blank" rel="noopener">D3.js</a></li>
-                </ul>
-                <a href="https://plotly.com/python/" class="cta-link" target="_blank" rel="noopener" aria-label="Explore Analytics Tools">See Dashboard Links</a>
-            </div>
-
-             <!-- MLOps Card -->
-             <div class="resource-card mlops-card">
-                <span class="free-badge">FREE</span>
-                <h3>☁️ Deployment & MLOps</h3>
-                <p>Resources on containers, orchestration, and deploying models into production pipelines reliably.</p>
-                <ul class="link-list">
-                    <li><a href="https://docs.docker.com/" target="_blank" rel="noopener">Docker Docs</a></li>
-                    <li><a href="https://kubernetes.io/docs/home/" target="_blank" rel="noopener">Kubernetes Docs</a></li>
-                    <li><a href="https://mlflow.org/docs/latest/index.html" target="_blank" rel="noopener">MLflow</a></li>
-                </ul>
-                <a href="https://mlflow.org/docs/latest/index.html" class="cta-link" target="_blank" rel="noopener" aria-label="Explore MLOps Tools">MLOps Checklist</a>
-            </div>
-
-            <!-- Datasets Card -->
-            <div class="resource-card data-card">
-                <span class="free-badge">FREE</span>
-                <h3>🗃️ Datasets</h3>
-                <p>Public, free datasets to train, benchmark, and experiment with.</p>
-                <ul class="link-list">
-                    <li><a href="https://www.kaggle.com/datasets" target="_blank" rel="noopener">Kaggle Datasets</a></li>
-                    <li><a href="https://huggingface.co/datasets" target="_blank" rel="noopener">Hugging Face Datasets</a></li>
-                    <li><a href="https://archive.ics.uci.edu/" target="_blank" rel="noopener">UCI ML Repository</a></li>
-                    <li><a href="https://datasetsearch.research.google.com/" target="_blank" rel="noopener">Google Dataset Search</a></li>
-                </ul>
-                <a href="https://www.kaggle.com/datasets" class="cta-link" target="_blank" rel="noopener" aria-label="Explore Datasets">Browse Datasets</a>
-            </div>
-
-            <!-- Cheat Sheets Card -->
-            <div class="resource-card cheat-card">
-                <span class="free-badge">FREE</span>
-                <h3>📋 Cheat Sheets</h3>
-                <p>Quick-reference syntax for the tools you touch every single day.</p>
-                <ul class="link-list">
-                    <li><a href="https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf" target="_blank" rel="noopener">Pandas Cheat Sheet</a></li>
-                    <li><a href="https://numpy.org/doc/stable/user/quickstart.html" target="_blank" rel="noopener">NumPy Quickstart</a></li>
-                    <li><a href="https://education.github.com/git-cheat-sheet-education.pdf" target="_blank" rel="noopener">Git Cheat Sheet</a></li>
-                    <li><a href="https://www.postgresql.org/docs/current/sql-commands.html" target="_blank" rel="noopener">SQL Command Reference</a></li>
-                </ul>
-                <a href="https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf" class="cta-link" target="_blank" rel="noopener" aria-label="View Cheat Sheets">Grab Cheat Sheets</a>
-            </div>
-
-            <!-- Community Card -->
-            <div class="resource-card community-card">
-                <span class="free-badge">FREE</span>
-                <h3>💬 Community & Discourse</h3>
-                <p>Where practitioners ask questions, share work, and compete.</p>
-                <ul class="link-list">
-                    <li><a href="https://www.kaggle.com/competitions" target="_blank" rel="noopener">Kaggle Competitions</a></li>
-                    <li><a href="https://www.reddit.com/r/MachineLearning/" target="_blank" rel="noopener">r/MachineLearning</a></li>
-                    <li><a href="https://stackoverflow.com/questions/tagged/machine-learning" target="_blank" rel="noopener">Stack Overflow: ML Tag</a></li>
-                </ul>
-                <a href="https://www.kaggle.com/competitions" class="cta-link" target="_blank" rel="noopener" aria-label="Join the Community">Join the Conversation</a>
-            </div>
-
-            <!-- Free Courses Card -->
-            <div class="resource-card learn-card">
-                <span class="free-badge">FREE</span>
-                <h3>🎓 Free Courses</h3>
-                <p>No-cost learning paths from foundations to deep learning.</p>
-                <ul class="link-list">
-                    <li><a href="https://www.fast.ai/" target="_blank" rel="noopener">fast.ai</a></li>
-                    <li><a href="https://www.deeplearning.ai/" target="_blank" rel="noopener">DeepLearning.AI</a></li>
-                    <li><a href="https://developers.google.com/machine-learning/crash-course" target="_blank" rel="noopener">Google ML Crash Course</a></li>
-                </ul>
-                <a href="https://www.fast.ai/" class="cta-link" target="_blank" rel="noopener" aria-label="Explore Free Courses">Start Learning</a>
-            </div>
-
-            <!-- Compute Card -->
-            <div class="resource-card compute-card">
-                <span class="free-badge">FREE</span>
-                <h3>🧮 Notebooks & Free Compute</h3>
-                <p>Free GPU/TPU access to run and share your work without local setup.</p>
-                <ul class="link-list">
-                    <li><a href="https://colab.research.google.com/" target="_blank" rel="noopener">Google Colab</a></li>
-                    <li><a href="https://www.kaggle.com/code" target="_blank" rel="noopener">Kaggle Kernels</a></li>
-                    <li><a href="https://jupyter.org/try" target="_blank" rel="noopener">Try Jupyter</a></li>
-                </ul>
-                <a href="https://colab.research.google.com/" class="cta-link" target="_blank" rel="noopener" aria-label="Access Free Compute">Fire Up a Notebook</a>
-            </div>
-        </div>
-
-        <footer>
-            &copy; 2026 WebShark.AI | Built for Data Scientists. Forever free, always.
-        </footer>
+  <div class="controls">
+    <div class="controls-row">
+      <input type="text" id="searchInput" placeholder="Search resources (e.g. 'pytorch', 'datasets', 'SQL')...">
+      <button class="btn btn-ghost" id="favToggle">⭐ Favorites only</button>
+      <button class="btn btn-primary" id="openSubmit">+ Suggest a resource</button>
     </div>
+    <div class="controls-row" id="chipRow"></div>
+  </div>
+
+  <div id="submitPanel">
+    <h3>Suggest a resource</h3>
+    <p style="opacity:0.75; font-size:0.9em; margin-top:-8px;">Add a link you find yourself using often. It'll show up in the library right away, tagged as community-submitted.</p>
+    <div class="form-row">
+      <input type="text" id="subTitle" placeholder="Resource name">
+      <select id="subCategory"></select>
+    </div>
+    <div class="form-row">
+      <input type="url" id="subUrl" placeholder="https://...">
+    </div>
+    <div class="form-row">
+      <textarea id="subDesc" placeholder="One or two sentences on why it's useful"></textarea>
+    </div>
+    <div class="form-row">
+      <button class="btn btn-primary" id="submitResource">Add to library</button>
+      <button class="btn btn-ghost" id="cancelSubmit">Cancel</button>
+    </div>
+    <div id="submitStatus"></div>
+  </div>
+
+  <div class="resource-grid" id="resourceGrid"></div>
+  <div class="empty-state" id="emptyState" style="display:none;">No resources match your search or filters yet — try clearing them, or suggest one!</div>
+
+  <footer>&copy; 2026 WebShark Library.AI | Built by and for data people. Forever free, always.</footer>
+</div>
+
+<script>
+const BASE_RESOURCES = [
+  // AI Models
+  {t:"arXiv: Machine Learning (cs.LG)", u:"https://arxiv.org/list/cs.LG/recent", c:"AI Models", d:"Daily feed of new ML research preprints."},
+  {t:"Papers with Code", u:"https://paperswithcode.com/", c:"AI Models", d:"Research papers linked directly to their code and benchmarks."},
+  {t:"Google DeepMind Research", u:"https://deepmind.google/research/", c:"AI Models", d:"Publications and blog posts from DeepMind."},
+  {t:"OpenAI Research", u:"https://openai.com/research", c:"AI Models", d:"Research index and technical reports from OpenAI."},
+
+  // ML Frameworks
+  {t:"PyTorch Docs", u:"https://pytorch.org/docs/stable/index.html", c:"ML Frameworks", d:"Official documentation for the PyTorch deep learning library."},
+  {t:"TensorFlow Learn", u:"https://www.tensorflow.org/learn", c:"ML Frameworks", d:"Guides and tutorials for TensorFlow and Keras."},
+  {t:"scikit-learn", u:"https://scikit-learn.org/stable/", c:"ML Frameworks", d:"The standard toolkit for classical ML in Python."},
+  {t:"Hugging Face Transformers", u:"https://huggingface.co/docs/transformers/index", c:"ML Frameworks", d:"Pretrained transformer models and easy fine-tuning."},
+  {t:"XGBoost Docs", u:"https://xgboost.readthedocs.io/", c:"ML Frameworks", d:"Gradient boosting library used everywhere in tabular ML."},
+
+  // Data Visualization & BI
+  {t:"Plotly for Python", u:"https://plotly.com/python/", c:"Visualization & BI", d:"Interactive charting library with a huge example gallery."},
+  {t:"Observable", u:"https://observablehq.com/", c:"Visualization & BI", d:"Notebooks built for live, shareable data visualization."},
+  {t:"D3.js", u:"https://d3js.org/", c:"Visualization & BI", d:"Low-level library for fully custom data visualizations."},
+  {t:"Matplotlib", u:"https://matplotlib.org/stable/index.html", c:"Visualization & BI", d:"The foundational Python plotting library."},
+
+  // MLOps & Deployment
+  {t:"Docker Docs", u:"https://docs.docker.com/", c:"MLOps & Deployment", d:"Containerize models and pipelines for reliable deployment."},
+  {t:"Kubernetes Docs", u:"https://kubernetes.io/docs/home/", c:"MLOps & Deployment", d:"Orchestrate containers at scale."},
+  {t:"MLflow", u:"https://mlflow.org/docs/latest/index.html", c:"MLOps & Deployment", d:"Track experiments, package models, and manage the ML lifecycle."},
+  {t:"DVC (Data Version Control)", u:"https://dvc.org/doc", c:"MLOps & Deployment", d:"Git-like version control for datasets and models."},
+
+  // Datasets
+  {t:"Kaggle Datasets", u:"https://www.kaggle.com/datasets", c:"Datasets", d:"Huge searchable catalog of public datasets."},
+  {t:"Hugging Face Datasets", u:"https://huggingface.co/datasets", c:"Datasets", d:"Datasets ready to load directly into ML pipelines."},
+  {t:"UCI ML Repository", u:"https://archive.ics.uci.edu/", c:"Datasets", d:"Classic, well-documented datasets for benchmarking."},
+  {t:"Google Dataset Search", u:"https://datasetsearch.research.google.com/", c:"Datasets", d:"Search engine that indexes datasets across the web."},
+
+  // Cheat Sheets
+  {t:"Pandas Cheat Sheet", u:"https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf", c:"Cheat Sheets", d:"Quick reference for the pandas API."},
+  {t:"NumPy Quickstart", u:"https://numpy.org/doc/stable/user/quickstart.html", c:"Cheat Sheets", d:"Core array operations at a glance."},
+  {t:"Git Cheat Sheet", u:"https://education.github.com/git-cheat-sheet-education.pdf", c:"Cheat Sheets", d:"The Git commands you actually use, on one page."},
+  {t:"SQL Command Reference", u:"https://www.postgresql.org/docs/current/sql-commands.html", c:"Cheat Sheets", d:"Full SQL command reference from the Postgres docs."},
+
+  // Community & Discourse
+  {t:"Kaggle Competitions", u:"https://www.kaggle.com/competitions", c:"Community", d:"Live competitions to test and showcase your modeling skills."},
+  {t:"r/MachineLearning", u:"https://www.reddit.com/r/MachineLearning/", c:"Community", d:"One of the largest ML discussion communities online."},
+  {t:"Stack Overflow: ML Tag", u:"https://stackoverflow.com/questions/tagged/machine-learning", c:"Community", d:"Q&A for specific ML implementation problems."},
+
+  // Free Courses
+  {t:"fast.ai", u:"https://www.fast.ai/", c:"Free Courses", d:"Practical, code-first deep learning courses."},
+  {t:"DeepLearning.AI", u:"https://www.deeplearning.ai/", c:"Free Courses", d:"Andrew Ng's courses and specializations."},
+  {t:"Google ML Crash Course", u:"https://developers.google.com/machine-learning/crash-course", c:"Free Courses", d:"Fast, free introduction to core ML concepts."},
+
+  // Notebooks & Compute
+  {t:"Google Colab", u:"https://colab.research.google.com/", c:"Notebooks & Compute", d:"Free hosted notebooks with GPU/TPU access."},
+  {t:"Kaggle Kernels", u:"https://www.kaggle.com/code", c:"Notebooks & Compute", d:"Free notebooks pre-loaded with popular datasets."},
+  {t:"Try Jupyter", u:"https://jupyter.org/try", c:"Notebooks & Compute", d:"Run Jupyter notebooks in-browser with no install."},
+
+  // Newsletters & Blogs
+  {t:"Towards Data Science", u:"https://towardsdatascience.com/", c:"Newsletters & Blogs", d:"Community-written articles on practical data science."},
+  {t:"The Batch (DeepLearning.AI)", u:"https://www.deeplearning.ai/the-batch/", c:"Newsletters & Blogs", d:"Weekly roundup of AI news and research."},
+  {t:"Sebastian Raschka's Blog", u:"https://sebastianraschka.com/blog/", c:"Newsletters & Blogs", d:"Deep, well-explained posts on ML fundamentals and research."},
+
+  // Dev Tools
+  {t:"VS Code", u:"https://code.visualstudio.com/", c:"Dev Tools", d:"The default editor for most data & ML work today."},
+  {t:"Weights & Biases Docs", u:"https://docs.wandb.ai/", c:"Dev Tools", d:"Experiment tracking and model monitoring."},
+  {t:"GitHub", u:"https://github.com/", c:"Dev Tools", d:"Where the code, and most of the ML ecosystem, lives."},
+
+  // Stats & Math
+  {t:"Khan Academy: Statistics", u:"https://www.khanacademy.org/math/statistics-probability", c:"Stats & Math", d:"Free, structured stats and probability fundamentals."},
+  {t:"StatQuest (YouTube)", u:"https://www.youtube.com/@statquest", c:"Stats & Math", d:"Clear, visual explanations of statistics and ML concepts."},
+  {t:"3Blue1Brown", u:"https://www.3blue1brown.com/", c:"Stats & Math", d:"Beautifully visualized explanations of linear algebra, calculus & neural nets."},
+
+  // Career Prep
+  {t:"LeetCode: Top SQL 50", u:"https://leetcode.com/studyplan/top-sql-50/", c:"Career Prep", d:"The SQL questions that come up most in interviews."},
+  {t:"Interview Query", u:"https://www.interviewquery.com/", c:"Career Prep", d:"Data science and analytics interview question bank."},
+
+  // Open Data
+  {t:"Data.gov", u:"https://data.gov/", c:"Open Data", d:"U.S. government open data catalog."},
+  {t:"World Bank Open Data", u:"https://data.worldbank.org/", c:"Open Data", d:"Global development data, free to explore and download."},
+  {t:"Our World in Data", u:"https://ourworldindata.org/", c:"Open Data", d:"Long-run global datasets with excellent visualizations."},
+
+  // Podcasts
+  {t:"Data Skeptic", u:"https://dataskeptic.com/", c:"Podcasts", d:"Long-running podcast on data science and ML topics."},
+  {t:"TWIML AI Podcast", u:"https://twimlai.com/", c:"Podcasts", d:"Interviews with ML researchers and practitioners."},
+];
+
+const CATEGORY_COLORS = {
+  "AI Models":"#2ecc71","ML Frameworks":"#e74c3c","Visualization & BI":"#f39c12",
+  "MLOps & Deployment":"#9b59b6","Datasets":"#16a085","Cheat Sheets":"#d35400",
+  "Community":"#2c3e50","Free Courses":"#c0392b","Notebooks & Compute":"#27ae60",
+  "Newsletters & Blogs":"#3498db","Dev Tools":"#8e44ad","Stats & Math":"#e67e22",
+  "Career Prep":"#1abc9c","Open Data":"#2980b9","Podcasts":"#7f8c8d"
+};
+
+const STORAGE_KEYS = { community: "webshark_community_resources", favorites: "webshark_favorites", dark: "webshark_dark_mode" };
+
+function loadJSON(key, fallback) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+  catch (e) { return fallback; }
+}
+function saveJSON(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { console.error("Storage error", e); }
+}
+
+let community = loadJSON(STORAGE_KEYS.community, []);
+let favorites = new Set(loadJSON(STORAGE_KEYS.favorites, []));
+let activeCategory = "All";
+let favOnly = false;
+
+function allResources() {
+  return [
+    ...BASE_RESOURCES.map((r, i) => ({...r, id: "base-" + i, submitted: false})),
+    ...community.map((r, i) => ({...r, id: "com-" + i, submitted: true}))
+  ];
+}
+
+function renderChips() {
+  const cats = ["All", ...Object.keys(CATEGORY_COLORS)];
+  const row = document.getElementById("chipRow");
+  row.innerHTML = "";
+  cats.forEach(cat => {
+    const chip = document.createElement("button");
+    chip.className = "chip" + (activeCategory === cat ? " active" : "");
+    chip.textContent = cat;
+    chip.onclick = () => { activeCategory = cat; renderChips(); render(); };
+    row.appendChild(chip);
+  });
+}
+
+function populateCategorySelect() {
+  const sel = document.getElementById("subCategory");
+  sel.innerHTML = "";
+  Object.keys(CATEGORY_COLORS).forEach(cat => {
+    const opt = document.createElement("option");
+    opt.value = cat; opt.textContent = cat;
+    sel.appendChild(opt);
+  });
+}
+
+function render() {
+  const query = document.getElementById("searchInput").value.trim().toLowerCase();
+  const grid = document.getElementById("resourceGrid");
+  const empty = document.getElementById("emptyState");
+  grid.innerHTML = "";
+
+  let items = allResources();
+  if (activeCategory !== "All") items = items.filter(r => r.c === activeCategory);
+  if (favOnly) items = items.filter(r => favorites.has(r.id));
+  if (query) {
+    items = items.filter(r =>
+      r.t.toLowerCase().includes(query) ||
+      r.d.toLowerCase().includes(query) ||
+      r.c.toLowerCase().includes(query)
+    );
+  }
+
+  document.getElementById("statTotal").textContent = allResources().length;
+  document.getElementById("statCategories").textContent = Object.keys(CATEGORY_COLORS).length;
+  document.getElementById("statCommunity").textContent = community.length;
+  document.getElementById("statFavorites").textContent = favorites.size;
+
+  if (items.length === 0) { empty.style.display = "block"; return; }
+  empty.style.display = "none";
+
+  items.forEach(r => {
+    const card = document.createElement("div");
+    card.className = "resource-card";
+    card.style.borderLeftColor = CATEGORY_COLORS[r.c] || "#3498db";
+
+    const star = document.createElement("button");
+    star.className = "star-btn" + (favorites.has(r.id) ? " favorited" : "");
+    star.innerHTML = favorites.has(r.id) ? "★" : "☆";
+    star.title = "Toggle favorite";
+    star.onclick = () => {
+      if (favorites.has(r.id)) favorites.delete(r.id); else favorites.add(r.id);
+      saveJSON(STORAGE_KEYS.favorites, [...favorites]);
+      render();
+    };
+
+    card.innerHTML = `
+      <span class="category-tag" style="color:${CATEGORY_COLORS[r.c] || '#3498db'}">${r.c}${r.submitted ? '<span class="submitted-badge">Community</span>' : ''}</span>
+      <h3>${escapeHTML(r.t)}</h3>
+      <p class="desc">${escapeHTML(r.d)}</p>
+      <div class="card-footer">
+        <a href="${escapeAttr(r.u)}" class="cta-link" target="_blank" rel="noopener">Visit →</a>
+      </div>
+    `;
+    card.appendChild(star);
+    grid.appendChild(card);
+  });
+}
+
+function escapeHTML(s) {
+  const d = document.createElement("div");
+  d.textContent = s;
+  return d.innerHTML;
+}
+function escapeAttr(s) {
+  return String(s).replace(/"/g, "&quot;");
+}
+
+// Search & filter listeners
+document.getElementById("searchInput").addEventListener("input", render);
+document.getElementById("favToggle").addEventListener("click", function() {
+  favOnly = !favOnly;
+  this.classList.toggle("active", favOnly);
+  render();
+});
+
+// Dark mode
+const darkToggle = document.getElementById("darkToggle");
+function applyDarkMode(on) {
+  document.body.classList.toggle("dark", on);
+  darkToggle.textContent = on ? "☀️ Light mode" : "🌙 Dark mode";
+}
+applyDarkMode(loadJSON(STORAGE_KEYS.dark, false));
+darkToggle.addEventListener("click", () => {
+  const isDark = !document.body.classList.contains("dark");
+  applyDarkMode(isDark);
+  saveJSON(STORAGE_KEYS.dark, isDark);
+});
+
+// Submission panel
+const submitPanel = document.getElementById("submitPanel");
+document.getElementById("openSubmit").addEventListener("click", () => {
+  submitPanel.classList.add("open");
+  submitPanel.scrollIntoView({behavior: "smooth", block: "center"});
+});
+document.getElementById("cancelSubmit").addEventListener("click", () => {
+  submitPanel.classList.remove("open");
+  document.getElementById("submitStatus").textContent = "";
+});
+document.getElementById("submitResource").addEventListener("click", () => {
+  const title = document.getElementById("subTitle").value.trim();
+  const url = document.getElementById("subUrl").value.trim();
+  const desc = document.getElementById("subDesc").value.trim();
+  const category = document.getElementById("subCategory").value;
+  const status = document.getElementById("submitStatus");
+
+  if (!title || !url || !desc) {
+    status.textContent = "Please fill in a title, URL, and short description.";
+    status.className = "error";
+    return;
+  }
+  try { new URL(url); } catch (e) {
+    status.textContent = "That URL doesn't look valid — include https://";
+    status.className = "error";
+    return;
+  }
+
+  community.push({t: title, u: url, c: category, d: desc});
+  saveJSON(STORAGE_KEYS.community, community);
+
+  status.textContent = "Added! It's now live in the library below.";
+  status.className = "success";
+  document.getElementById("subTitle").value = "";
+  document.getElementById("subUrl").value = "";
+  document.getElementById("subDesc").value = "";
+  render();
+});
+
+// Init
+populateCategorySelect();
+renderChips();
+render();
+</script>
 </body>
 </html>
