@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebShark.AI | Data Science Resource Hub</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --background-light: #f4f7f9;
+            --text-dark: #333;
+            --card-bg: #ffffff;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        header p {
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        .resource-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            transition: transform 0.2s;
+            border-left: 5px solid var(--primary-color);
+        }
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.12);
+        }
+        .resource-card h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+        .resource-card p {
+            margin-bottom: 20px;
+            color: #555;
+            line-height: 1.4;
+        }
+        .cta-link {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .cta-link:hover {
+            background-color: #2980b9;
+        }
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            color: #777;
+        }
+
+        /* Simple subject category coloring */
+        .ml-card { border-left-color: #e74c3c; }
+        .ai-card { border-left-color: #2ecc71; }
+        .analytics-card { border-left-color: #f39c12; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🕸️ WebShark.AI</h1>
+            <p>Your one-stop resource hub for AI, Machine Learning, and Data Analytics workflows.</p>
+        </header>
+
+        <h2>🚀 Quick Start Resources</h2>
+        <p>Dive into the most critical links to optimize your data science workflow, from foundational knowledge to state-of-the-art tools.</p>
+
+        <div class="resource-grid">
+            <!-- AI Category Card -->
+            <div class="resource-card ai-card">
+                <h3>🤖 Cutting-Edge AI Models</h3>
+                <p>Links and papers for the latest large language models, multimodal AI research, and generative techniques (e.g., transformers, Diffusion models).</p>
+                <a href="#" class="cta-link" aria-label="Explore Advanced AI Resources">View Latest Papers</a>
+            </div>
+
+            <!-- ML Category Card -->
+            <div class="resource-card ml-card">
+                <h3>🧠 Machine Learning Frameworks</h3>
+                <p>Deep dives into TensorFlow, PyTorch, Scikit-learn, and specialized tutorials for model building, hyperparameter tuning, and deployment.</p>
+                <a href="#" class="cta-link" aria-label="Explore ML Libraries">Check Out Tutorials</a>
+            </div>
+
+            <!-- Analytics Category Card -->
+            <div class="resource-card analytics-card">
+                <h3>📊 Data Visualization & BI</h3>
+                <p>Resources for visualization libraries (Plotly, Bokeh), database connections, and best practices for telling a clear data story.</p>
+                <a href="#" class="cta-link" aria-label="Explore Analytics Tools">See Dashboard Links</a>
+            </div>
+
+             <!-- Bonus Card: Infrastructure -->
+             <div class="resource-card" style="border-left: 5px solid #9b59b6;">
+                <h3>☁️ Deployment & MLOps</h3>
+                <p>Resources on Docker, Kubernetes, Cloudflare Workers, and deploying models into production pipelines reliably.</p>
+                <a href="#" class="cta-link" aria-label="Explore MLOps Tools">MLOps Checklist</a>
+            </div>
+        </div>
+
+        <footer>
+            &copy; 2024 WebShark.AI | Built for Data Scientists. Links are placeholders for manual updates.
+        </footer>
+    </div>
+</body>
+</html>
