@@ -1,0 +1,26 @@
+name: Check resource links
+
+on:
+  schedule:
+    - cron: "0 8 * * 1"   # every Monday at 08:00 UTC
+  workflow_dispatch: {}    # lets you trigger it manually from the GitHub Actions tab
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run link checker
+        run: node link-checker.js resources.json
+
+      - name: Upload broken links report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: broken-links-report
+          path: broken-links-report.json
