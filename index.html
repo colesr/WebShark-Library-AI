@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WebShark.AI — a forever-free, one-pass resource hub for AI, machine learning, and data analytics. Papers, frameworks, datasets, cheat sheets, and community links, all in one place.">
     <title>WebShark.AI | Data Science Resource Hub</title>
     <style>
         :root {
@@ -24,19 +25,44 @@
         }
         header {
             background-color: var(--primary-color);
+            background-image: radial-gradient(circle at 15% 20%, rgba(255,255,255,0.12) 0, transparent 45%),
+                               radial-gradient(circle at 85% 75%, rgba(255,255,255,0.10) 0, transparent 40%);
             color: white;
             padding: 40px 20px;
             text-align: center;
             border-radius: 8px;
-            margin-bottom: 30px;
+            margin-bottom: 12px;
         }
         header h1 {
             margin: 0;
             font-size: 2.5em;
         }
-        header p {
-            opacity: 0.9;
-            margin-top: 5px;
+        header p.tagline {
+            opacity: 0.95;
+            margin-top: 8px;
+            font-size: 1.05em;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        header p.subtag {
+            opacity: 0.85;
+            margin-top: 4px;
+            font-size: 0.95em;
+        }
+        .free-banner {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2980b9;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        h2.section-title {
+            margin-top: 40px;
+            margin-bottom: 6px;
+        }
+        p.section-desc {
+            margin-top: 0;
+            color: #555;
         }
         .resource-grid {
             display: grid;
@@ -44,6 +70,7 @@
             gap: 25px;
         }
         .resource-card {
+            position: relative;
             background-color: var(--card-bg);
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
@@ -64,6 +91,18 @@
             color: #555;
             line-height: 1.4;
         }
+        .free-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-size: 0.7em;
+            font-weight: 700;
+            color: #2980b9;
+            background: #eaf4fc;
+            padding: 3px 8px;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+        }
         .cta-link {
             display: inline-block;
             background-color: var(--primary-color);
@@ -75,6 +114,22 @@
         }
         .cta-link:hover {
             background-color: #2980b9;
+        }
+        .link-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+        .link-list li {
+            margin-bottom: 8px;
+        }
+        .link-list a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .link-list a:hover {
+            text-decoration: underline;
         }
         footer {
             text-align: center;
@@ -88,6 +143,12 @@
         .ml-card { border-left-color: #e74c3c; }
         .ai-card { border-left-color: #2ecc71; }
         .analytics-card { border-left-color: #f39c12; }
+        .mlops-card { border-left-color: #9b59b6; }
+        .data-card { border-left-color: #16a085; }
+        .cheat-card { border-left-color: #d35400; }
+        .community-card { border-left-color: #2c3e50; }
+        .learn-card { border-left-color: #c0392b; }
+        .compute-card { border-left-color: #27ae60; }
 
     </style>
 </head>
@@ -95,44 +156,137 @@
     <div class="container">
         <header>
             <h1>🕸️ WebShark.AI</h1>
-            <p>Your one-stop resource hub for AI, Machine Learning, and Data Analytics workflows.</p>
+            <p class="tagline">Forever Free, One-Pass Ticket to the Universe of Data</p>
+            <p class="subtag">Your resource hub for AI, Machine Learning, and Data Analytics workflows.</p>
         </header>
+        <p class="free-banner">✦ Every link below is free to access — no paywalls, no signup required to browse ✦</p>
 
-        <h2>🚀 Quick Start Resources</h2>
-        <p>Dive into the most critical links to optimize your data science workflow, from foundational knowledge to state-of-the-art tools.</p>
+        <h2 class="section-title">🚀 Quick Start Resources</h2>
+        <p class="section-desc">Dive into the most critical links to optimize your data science workflow, from foundational knowledge to state-of-the-art tools.</p>
 
         <div class="resource-grid">
             <!-- AI Category Card -->
             <div class="resource-card ai-card">
+                <span class="free-badge">FREE</span>
                 <h3>🤖 Cutting-Edge AI Models</h3>
-                <p>Links and papers for the latest large language models, multimodal AI research, and generative techniques (e.g., transformers, Diffusion models).</p>
-                <a href="#" class="cta-link" aria-label="Explore Advanced AI Resources">View Latest Papers</a>
+                <p>Papers and research on the latest large language models, multimodal AI, and generative techniques.</p>
+                <ul class="link-list">
+                    <li><a href="https://arxiv.org/list/cs.LG/recent" target="_blank" rel="noopener">arXiv: Machine Learning (cs.LG)</a></li>
+                    <li><a href="https://paperswithcode.com/" target="_blank" rel="noopener">Papers with Code</a></li>
+                </ul>
+                <a href="https://paperswithcode.com/" class="cta-link" target="_blank" rel="noopener" aria-label="Explore Advanced AI Resources">Launch Into Papers</a>
             </div>
 
             <!-- ML Category Card -->
             <div class="resource-card ml-card">
+                <span class="free-badge">FREE</span>
                 <h3>🧠 Machine Learning Frameworks</h3>
-                <p>Deep dives into TensorFlow, PyTorch, Scikit-learn, and specialized tutorials for model building, hyperparameter tuning, and deployment.</p>
-                <a href="#" class="cta-link" aria-label="Explore ML Libraries">Check Out Tutorials</a>
+                <p>Deep dives into the core libraries for model building, hyperparameter tuning, and deployment.</p>
+                <ul class="link-list">
+                    <li><a href="https://pytorch.org/docs/stable/index.html" target="_blank" rel="noopener">PyTorch Docs</a></li>
+                    <li><a href="https://www.tensorflow.org/learn" target="_blank" rel="noopener">TensorFlow Learn</a></li>
+                    <li><a href="https://scikit-learn.org/stable/" target="_blank" rel="noopener">scikit-learn</a></li>
+                    <li><a href="https://huggingface.co/docs/transformers/index" target="_blank" rel="noopener">Hugging Face Transformers</a></li>
+                </ul>
+                <a href="https://pytorch.org/docs/stable/index.html" class="cta-link" target="_blank" rel="noopener" aria-label="Explore ML Libraries">Check Out Tutorials</a>
             </div>
 
             <!-- Analytics Category Card -->
             <div class="resource-card analytics-card">
+                <span class="free-badge">FREE</span>
                 <h3>📊 Data Visualization & BI</h3>
-                <p>Resources for visualization libraries (Plotly, Bokeh), database connections, and best practices for telling a clear data story.</p>
-                <a href="#" class="cta-link" aria-label="Explore Analytics Tools">See Dashboard Links</a>
+                <p>Visualization libraries and best practices for telling a clear data story.</p>
+                <ul class="link-list">
+                    <li><a href="https://plotly.com/python/" target="_blank" rel="noopener">Plotly for Python</a></li>
+                    <li><a href="https://observablehq.com/" target="_blank" rel="noopener">Observable</a></li>
+                    <li><a href="https://d3js.org/" target="_blank" rel="noopener">D3.js</a></li>
+                </ul>
+                <a href="https://plotly.com/python/" class="cta-link" target="_blank" rel="noopener" aria-label="Explore Analytics Tools">See Dashboard Links</a>
             </div>
 
-             <!-- Bonus Card: Infrastructure -->
-             <div class="resource-card" style="border-left: 5px solid #9b59b6;">
+             <!-- MLOps Card -->
+             <div class="resource-card mlops-card">
+                <span class="free-badge">FREE</span>
                 <h3>☁️ Deployment & MLOps</h3>
-                <p>Resources on Docker, Kubernetes, Cloudflare Workers, and deploying models into production pipelines reliably.</p>
-                <a href="#" class="cta-link" aria-label="Explore MLOps Tools">MLOps Checklist</a>
+                <p>Resources on containers, orchestration, and deploying models into production pipelines reliably.</p>
+                <ul class="link-list">
+                    <li><a href="https://docs.docker.com/" target="_blank" rel="noopener">Docker Docs</a></li>
+                    <li><a href="https://kubernetes.io/docs/home/" target="_blank" rel="noopener">Kubernetes Docs</a></li>
+                    <li><a href="https://mlflow.org/docs/latest/index.html" target="_blank" rel="noopener">MLflow</a></li>
+                </ul>
+                <a href="https://mlflow.org/docs/latest/index.html" class="cta-link" target="_blank" rel="noopener" aria-label="Explore MLOps Tools">MLOps Checklist</a>
+            </div>
+
+            <!-- Datasets Card -->
+            <div class="resource-card data-card">
+                <span class="free-badge">FREE</span>
+                <h3>🗃️ Datasets</h3>
+                <p>Public, free datasets to train, benchmark, and experiment with.</p>
+                <ul class="link-list">
+                    <li><a href="https://www.kaggle.com/datasets" target="_blank" rel="noopener">Kaggle Datasets</a></li>
+                    <li><a href="https://huggingface.co/datasets" target="_blank" rel="noopener">Hugging Face Datasets</a></li>
+                    <li><a href="https://archive.ics.uci.edu/" target="_blank" rel="noopener">UCI ML Repository</a></li>
+                    <li><a href="https://datasetsearch.research.google.com/" target="_blank" rel="noopener">Google Dataset Search</a></li>
+                </ul>
+                <a href="https://www.kaggle.com/datasets" class="cta-link" target="_blank" rel="noopener" aria-label="Explore Datasets">Browse Datasets</a>
+            </div>
+
+            <!-- Cheat Sheets Card -->
+            <div class="resource-card cheat-card">
+                <span class="free-badge">FREE</span>
+                <h3>📋 Cheat Sheets</h3>
+                <p>Quick-reference syntax for the tools you touch every single day.</p>
+                <ul class="link-list">
+                    <li><a href="https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf" target="_blank" rel="noopener">Pandas Cheat Sheet</a></li>
+                    <li><a href="https://numpy.org/doc/stable/user/quickstart.html" target="_blank" rel="noopener">NumPy Quickstart</a></li>
+                    <li><a href="https://education.github.com/git-cheat-sheet-education.pdf" target="_blank" rel="noopener">Git Cheat Sheet</a></li>
+                    <li><a href="https://www.postgresql.org/docs/current/sql-commands.html" target="_blank" rel="noopener">SQL Command Reference</a></li>
+                </ul>
+                <a href="https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf" class="cta-link" target="_blank" rel="noopener" aria-label="View Cheat Sheets">Grab Cheat Sheets</a>
+            </div>
+
+            <!-- Community Card -->
+            <div class="resource-card community-card">
+                <span class="free-badge">FREE</span>
+                <h3>💬 Community & Discourse</h3>
+                <p>Where practitioners ask questions, share work, and compete.</p>
+                <ul class="link-list">
+                    <li><a href="https://www.kaggle.com/competitions" target="_blank" rel="noopener">Kaggle Competitions</a></li>
+                    <li><a href="https://www.reddit.com/r/MachineLearning/" target="_blank" rel="noopener">r/MachineLearning</a></li>
+                    <li><a href="https://stackoverflow.com/questions/tagged/machine-learning" target="_blank" rel="noopener">Stack Overflow: ML Tag</a></li>
+                </ul>
+                <a href="https://www.kaggle.com/competitions" class="cta-link" target="_blank" rel="noopener" aria-label="Join the Community">Join the Conversation</a>
+            </div>
+
+            <!-- Free Courses Card -->
+            <div class="resource-card learn-card">
+                <span class="free-badge">FREE</span>
+                <h3>🎓 Free Courses</h3>
+                <p>No-cost learning paths from foundations to deep learning.</p>
+                <ul class="link-list">
+                    <li><a href="https://www.fast.ai/" target="_blank" rel="noopener">fast.ai</a></li>
+                    <li><a href="https://www.deeplearning.ai/" target="_blank" rel="noopener">DeepLearning.AI</a></li>
+                    <li><a href="https://developers.google.com/machine-learning/crash-course" target="_blank" rel="noopener">Google ML Crash Course</a></li>
+                </ul>
+                <a href="https://www.fast.ai/" class="cta-link" target="_blank" rel="noopener" aria-label="Explore Free Courses">Start Learning</a>
+            </div>
+
+            <!-- Compute Card -->
+            <div class="resource-card compute-card">
+                <span class="free-badge">FREE</span>
+                <h3>🧮 Notebooks & Free Compute</h3>
+                <p>Free GPU/TPU access to run and share your work without local setup.</p>
+                <ul class="link-list">
+                    <li><a href="https://colab.research.google.com/" target="_blank" rel="noopener">Google Colab</a></li>
+                    <li><a href="https://www.kaggle.com/code" target="_blank" rel="noopener">Kaggle Kernels</a></li>
+                    <li><a href="https://jupyter.org/try" target="_blank" rel="noopener">Try Jupyter</a></li>
+                </ul>
+                <a href="https://colab.research.google.com/" class="cta-link" target="_blank" rel="noopener" aria-label="Access Free Compute">Fire Up a Notebook</a>
             </div>
         </div>
 
         <footer>
-            &copy; 2024 WebShark.AI | Built for Data Scientists. Links are placeholders for manual updates.
+            &copy; 2026 WebShark.AI | Built for Data Scientists. Forever free, always.
         </footer>
     </div>
 </body>
