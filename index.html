@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="WebShark Library.AI — a forever-free, one-pass, community-built hub for AI, machine learning, and data analytics resources.">
 <title>WebShark Library.AI | Data Science Resource Hub</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
   :root {
     --primary-color: #3498db;
@@ -199,6 +200,18 @@
 
   .note-box { font-size: 0.8em; opacity: 0.7; background: var(--background-light); border-radius: 6px; padding: 10px 14px; margin-top: 10px; }
 
+  #demoBanner {
+    display: none;
+    text-align: center; font-size: 0.85em; padding: 10px 16px; border-radius: 8px;
+    background: rgba(211,84,0,0.1); color: #d35400; margin-bottom: 20px;
+    animation: fadeIn 0.5s ease both;
+  }
+  #demoBanner.show { display: block; }
+
+  .login-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .login-row input { flex: 1; min-width: 180px; padding: 10px; border-radius: 6px; border: 1px solid var(--border-soft); background: var(--background-light); color: var(--text-dark); }
+  .login-error { color: #e74c3c; font-size: 0.85em; margin-top: 6px; }
+
   footer { text-align: center; margin-top: 50px; padding: 20px; border-top: 1px solid var(--border-soft); color: var(--text-dark); opacity: 0.6; font-size: 0.85em; }
   footer a { color: var(--primary-color); }
 
@@ -219,6 +232,7 @@
     <p class="subtag">A living library of AI, Machine Learning & Data Analytics resources.</p>
   </header>
   <p class="free-banner">✦ This is a living library — everything is free, and you can add to it below ✦</p>
+  <p id="demoBanner">Running in local demo mode — submissions and votes are only visible in your browser. See SETUP.md to connect a real shared backend.</p>
 
   <div class="stats-strip">
     <span><strong id="statTotal">0</strong> resources</span>
@@ -260,8 +274,18 @@
   <div id="adminPanel">
     <h3>Moderation queue</h3>
     <p style="opacity:0.75; font-size:0.9em; margin-top:-8px;">Review community submissions before they go live.</p>
+
+    <div id="adminLoginForm" style="display:none;">
+      <div class="login-row">
+        <input type="email" id="adminEmail" placeholder="Admin email">
+        <input type="password" id="adminPassword" placeholder="Password">
+        <button class="btn btn-primary" id="adminLoginBtn">Log in</button>
+      </div>
+      <div class="login-error" id="adminLoginError"></div>
+    </div>
+
     <div id="adminList"></div>
-    <div class="note-box">⚠️ Heads up: this admin view is a client-side demo, gated by a simple prompt — not real authentication. A production version needs a real backend with proper login before this queue is trustworthy.</div>
+    <div class="note-box" id="adminNote">⚠️ Heads up: this admin view is a client-side demo, gated by a simple prompt — not real authentication. Connect a Supabase backend (see SETUP.md) to switch to real login-based moderation.</div>
   </div>
 
   <div class="resource-grid" id="resourceGrid"></div>
@@ -349,6 +373,15 @@ const CATEGORY_COLORS = {
   "Career Prep":"#1abc9c","Open Data":"#2980b9","Podcasts":"#7f8c8d"
 };
 
+// ---- Backend config ----
+// Fill these in (see SETUP.md) to switch from local demo mode to a real,
+// shared Supabase backend. Left as placeholders, the site runs entirely
+// on browser storage instead.
+const SUPABASE_URL = "https://bzxbiyecqpkuekktiwxj.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6eGJpeWVjcXBrdWVra3Rpd3hqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3MTQ4OTIsImV4cCI6MjA5OTI5MDg5Mn0.MLm01LxePxZj-39PlY56AplYQqtYt4mnxOjz_ke3IJ8";
+const BACKEND_ENABLED = SUPABASE_URL.startsWith("http") && SUPABASE_ANON_KEY.length > 20;
+const sb = BACKEND_ENABLED ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
 const STORAGE_KEYS = {
   community: "webshark_community_resources_v2",
   favorites: "webshark_favorites",
@@ -356,7 +389,7 @@ const STORAGE_KEYS = {
   dark: "webshark_dark_mode",
   admin: "webshark_admin_session"
 };
-const ADMIN_PASSCODE = "sharkmod"; // demo-only, not real auth
+const ADMIN_PASSCODE = "sharkmod"; // demo-mode only, not real auth
 
 function loadJSON(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
@@ -366,22 +399,39 @@ function saveJSON(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { console.error("Storage error", e); }
 }
 
-let community = loadJSON(STORAGE_KEYS.community, []); // {t,u,c,d,tags,status:"pending"|"approved"|"rejected"}
-let favorites = new Set(loadJSON(STORAGE_KEYS.favorites, []));
-let upvotes = new Set(loadJSON(STORAGE_KEYS.upvotes, []));
-let isAdmin = sessionStorage.getItem(STORAGE_KEYS.admin) === "true";
+// `community` is a cache refreshed from Supabase (connected mode) or
+// localStorage (demo mode). Same shape either way so render() doesn't care.
+let community = BACKEND_ENABLED ? [] : loadJSON(STORAGE_KEYS.community, []);
+let favorites = new Set(loadJSON(STORAGE_KEYS.favorites, [])); // always local — personal preference, not shared
+let upvotes = new Set(loadJSON(STORAGE_KEYS.upvotes, []));     // local flag to avoid double-clicking; see SETUP.md caveat
+let isAdmin = BACKEND_ENABLED ? false : sessionStorage.getItem(STORAGE_KEYS.admin) === "true";
 let activeCategory = "All";
 let activeTag = null;
 let favOnly = false;
 
-function allResources() {
-  const base = BASE_RESOURCES.map((r, i) => ({...r, id: "base-" + i, submitted: false, status: "approved"}));
-  const approved = community.map((r, i) => ({...r, id: "com-" + i, submitted: true})).filter(r => r.status === "approved");
-  return [...base, ...approved];
+function dbRowToResource(row) {
+  return { t: row.title, u: row.url, c: row.category, d: row.description, tags: row.tags || [], status: row.status, id: "com-" + row.id, dbId: row.id, votes: row.votes };
 }
 
-function pendingResources() {
-  return community.map((r, i) => ({...r, id: "com-" + i}));
+async function refreshCommunityApproved() {
+  if (!BACKEND_ENABLED) { community = loadJSON(STORAGE_KEYS.community, []); return; }
+  const { data, error } = await sb.from("resources").select("*").eq("status", "approved").order("created_at", { ascending: false });
+  if (error) { console.error("Supabase fetch error", error); community = []; return; }
+  community = data.map(dbRowToResource);
+}
+
+async function refreshCommunityAll() {
+  // Admin-only: relies on the RLS policy that lets logged-in admins see every status
+  if (!BACKEND_ENABLED) return community; // demo mode already stores everything in `community`
+  const { data, error } = await sb.from("resources").select("*").order("created_at", { ascending: false });
+  if (error) { console.error("Supabase admin fetch error", error); return []; }
+  return data.map(dbRowToResource);
+}
+
+function allResources() {
+  const base = BASE_RESOURCES.map((r, i) => ({...r, id: "base-" + i, submitted: false, status: "approved"}));
+  const approved = community.filter(r => r.status === "approved").map(r => ({...r, submitted: true}));
+  return [...base, ...approved];
 }
 
 function renderChips() {
@@ -445,8 +495,13 @@ function render() {
     ).join("");
 
     const upvoted = upvotes.has(r.id);
-    const baseVotes = (r.t.length * 3 + (r.c.length * 2)) % 40 + 5; // stable pseudo-seed per resource, just for a realistic starting number
-    const voteCount = baseVotes + (upvoted ? 1 : 0);
+    let voteCount;
+    if (typeof r.votes === "number") {
+      voteCount = r.votes; // real shared count from the backend
+    } else {
+      const baseVotes = (r.t.length * 3 + (r.c.length * 2)) % 40 + 5; // stable pseudo-seed, demo mode only
+      voteCount = baseVotes + (upvoted ? 1 : 0);
+    }
 
     card.innerHTML = `
       <span class="category-tag" style="color:${CATEGORY_COLORS[r.c] || '#3498db'}">${r.c}${r.submitted ? '<span class="submitted-badge">Community</span>' : ''}</span>
@@ -479,11 +534,18 @@ function render() {
       };
     });
 
-    card.querySelector(".upvote-btn").onclick = (e) => {
+    card.querySelector(".upvote-btn").onclick = async (e) => {
       const btn = e.currentTarget;
-      if (upvotes.has(r.id)) upvotes.delete(r.id); else upvotes.add(r.id);
+      if (upvotes.has(r.id)) { return; } // already upvoted this session/browser — no un-vote, keeps it simple and honest
+      upvotes.add(r.id);
       saveJSON(STORAGE_KEYS.upvotes, [...upvotes]);
       btn.querySelector(".arrow").classList.add("pop");
+
+      if (BACKEND_ENABLED && r.dbId) {
+        const { error } = await sb.rpc("upvote_resource", { resource_id: r.dbId });
+        if (error) console.error("Upvote failed", error);
+        await refreshCommunityApproved();
+      }
       render();
     };
 
@@ -528,7 +590,7 @@ document.getElementById("cancelSubmit").addEventListener("click", () => {
   submitPanel.classList.remove("open");
   document.getElementById("submitStatus").textContent = "";
 });
-document.getElementById("submitResource").addEventListener("click", () => {
+document.getElementById("submitResource").addEventListener("click", async () => {
   const title = document.getElementById("subTitle").value.trim();
   const url = document.getElementById("subUrl").value.trim();
   const desc = document.getElementById("subDesc").value.trim();
@@ -548,49 +610,108 @@ document.getElementById("submitResource").addEventListener("click", () => {
     return;
   }
 
-  community.push({t: title, u: url, c: category, d: desc, tags, status: "pending"});
-  saveJSON(STORAGE_KEYS.community, community);
+  if (BACKEND_ENABLED) {
+    const { error } = await sb.from("resources").insert({ title, url, category, description: desc, tags, status: "pending" });
+    if (error) {
+      status.textContent = "Something went wrong submitting that — please try again.";
+      status.className = "error";
+      console.error(error);
+      return;
+    }
+  } else {
+    community.push({t: title, u: url, c: category, d: desc, tags, status: "pending"});
+    saveJSON(STORAGE_KEYS.community, community);
+  }
 
-  status.textContent = "Submitted! It'll appear in the library once approved (or check the Admin queue).";
+  status.textContent = "Submitted! It'll appear in the library once approved.";
   status.className = "success";
   document.getElementById("subTitle").value = "";
   document.getElementById("subUrl").value = "";
   document.getElementById("subDesc").value = "";
   document.getElementById("subTags").value = "";
-  renderAdmin();
+  if (isAdmin) await renderAdmin();
   render();
 });
 
 // Admin / moderation
 const adminPanel = document.getElementById("adminPanel");
 const adminToggle = document.getElementById("adminToggle");
+const adminLoginForm = document.getElementById("adminLoginForm");
+const adminNote = document.getElementById("adminNote");
+let adminAllCache = []; // full (all-status) list, admin view only
+
 function setAdminUI() {
   adminToggle.textContent = isAdmin ? "🛠️ Admin (on)" : "🛠️ Admin";
+  if (BACKEND_ENABLED) {
+    adminNote.textContent = "Moderation here is backed by real Supabase Auth login — only accounts listed in the `admins` table can approve or reject.";
+  }
 }
-adminToggle.addEventListener("click", () => {
+
+async function openAdminPanel() {
+  adminPanel.classList.add("open");
+  adminPanel.scrollIntoView({behavior: "smooth", block: "center"});
+  await renderAdmin();
+}
+
+adminToggle.addEventListener("click", async () => {
   if (isAdmin) {
     isAdmin = false;
-    sessionStorage.removeItem(STORAGE_KEYS.admin);
+    if (BACKEND_ENABLED) { await sb.auth.signOut(); }
+    else { sessionStorage.removeItem(STORAGE_KEYS.admin); }
     adminPanel.classList.remove("open");
+    setAdminUI();
+    return;
+  }
+
+  if (BACKEND_ENABLED) {
+    adminPanel.classList.add("open");
+    adminLoginForm.style.display = "block";
+    document.getElementById("adminList").innerHTML = "";
+    adminPanel.scrollIntoView({behavior: "smooth", block: "center"});
   } else {
     const code = prompt("Admin passcode (demo only):");
     if (code === ADMIN_PASSCODE) {
       isAdmin = true;
       sessionStorage.setItem(STORAGE_KEYS.admin, "true");
-      adminPanel.classList.add("open");
-      renderAdmin();
-      adminPanel.scrollIntoView({behavior: "smooth", block: "center"});
+      await openAdminPanel();
     } else if (code !== null) {
       alert("Incorrect passcode.");
     }
+    setAdminUI();
   }
-  setAdminUI();
 });
 
-function renderAdmin() {
+if (BACKEND_ENABLED) {
+  document.getElementById("adminLoginBtn").addEventListener("click", async () => {
+    const email = document.getElementById("adminEmail").value.trim();
+    const password = document.getElementById("adminPassword").value;
+    const errEl = document.getElementById("adminLoginError");
+    errEl.textContent = "";
+
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) {
+      errEl.textContent = "Login failed — check your email/password, and that this account is in the admins table.";
+      return;
+    }
+    isAdmin = true;
+    adminLoginForm.style.display = "none";
+    setAdminUI();
+    await renderAdmin();
+  });
+}
+
+async function renderAdmin() {
   const list = document.getElementById("adminList");
   if (!isAdmin) return;
-  const pending = pendingResources().filter(r => r.status === "pending");
+
+  let pending;
+  if (BACKEND_ENABLED) {
+    adminAllCache = await refreshCommunityAll();
+    pending = adminAllCache.filter(r => r.status === "pending");
+  } else {
+    pending = community.map((r, i) => ({...r, id: "com-" + i})).filter(r => r.status === "pending");
+  }
+
   if (pending.length === 0) {
     list.innerHTML = '<p style="opacity:0.7; font-size:0.9em;">No submissions waiting for review.</p>';
     return;
@@ -606,29 +727,48 @@ function renderAdmin() {
         <small>${escapeHTML(r.d)}</small>
       </div>
       <div class="admin-actions">
-        <button class="btn btn-approve" data-id="${r.id}" data-action="approve">Approve</button>
-        <button class="btn btn-reject" data-id="${r.id}" data-action="reject">Reject</button>
+        <button class="btn btn-approve" data-id="${r.id}" data-dbid="${r.dbId || ''}" data-action="approve">Approve</button>
+        <button class="btn btn-reject" data-id="${r.id}" data-dbid="${r.dbId || ''}" data-action="reject">Reject</button>
       </div>
     `;
     list.appendChild(row);
   });
   list.querySelectorAll("button[data-action]").forEach(btn => {
-    btn.onclick = () => {
-      const idx = parseInt(btn.getAttribute("data-id").replace("com-", ""), 10);
-      community[idx].status = btn.getAttribute("data-action") === "approve" ? "approved" : "rejected";
-      saveJSON(STORAGE_KEYS.community, community);
-      renderAdmin();
+    btn.onclick = async () => {
+      const action = btn.getAttribute("data-action");
+      const newStatus = action === "approve" ? "approved" : "rejected";
+
+      if (BACKEND_ENABLED) {
+        const dbId = btn.getAttribute("data-dbid");
+        const { error } = await sb.from("resources").update({ status: newStatus }).eq("id", dbId);
+        if (error) { console.error("Moderation update failed", error); return; }
+        await refreshCommunityApproved();
+      } else {
+        const idx = parseInt(btn.getAttribute("data-id").replace("com-", ""), 10);
+        community[idx].status = newStatus;
+        saveJSON(STORAGE_KEYS.community, community);
+      }
+      await renderAdmin();
       render();
     };
   });
 }
 
+// Demo-mode banner
+if (!BACKEND_ENABLED) {
+  document.getElementById("demoBanner").classList.add("show");
+}
+
 // Init
-populateCategorySelect();
-renderChips();
-setAdminUI();
-if (isAdmin) { adminPanel.classList.add("open"); renderAdmin(); }
-render();
+async function init() {
+  populateCategorySelect();
+  renderChips();
+  setAdminUI();
+  await refreshCommunityApproved();
+  if (isAdmin) { adminPanel.classList.add("open"); await renderAdmin(); }
+  render();
+}
+init();
 </script>
 </body>
 </html>
