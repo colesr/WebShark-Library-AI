@@ -4,21 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="WebShark Library.AI — a forever-free, one-pass, community-built hub for AI, machine learning, and data analytics resources.">
+<meta property="og:title" content="WebShark Library.AI | Data Science Resource Hub">
+<meta property="og:description" content="Forever free library of AI, ML, and data science resources — browse without an account; create one to comment and join the conversation.">
+<meta name="twitter:card" content="summary_large_image">
 <title>WebShark Library.AI | Data Science Resource Hub</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
   :root {
-    --primary-color: #3498db;
-    --background-light: #f4f7f9;
-    --text-dark: #333;
+    --primary-color: #1a7ab8;
+    --primary-hover: #156699;
+    --accent: #0ea5a0;
+    --background-light: #f0f5f9;
+    --text-dark: #1e293b;
     --card-bg: #ffffff;
-    --border-soft: #e2e8ee;
+    --border-soft: #dce5ee;
+    --shadow: 0 4px 14px rgba(15, 40, 70, 0.07);
+    --shadow-hover: 0 12px 28px rgba(15, 40, 70, 0.12);
+    --radius: 12px;
   }
   body.dark {
-    --background-light: #12161c;
+    --background-light: #0f1419;
     --text-dark: #e8edf2;
-    --card-bg: #1b212a;
-    --border-soft: #2a323d;
+    --card-bg: #1a222c;
+    --border-soft: #2a3542;
+    --shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    --shadow-hover: 0 12px 28px rgba(0, 0, 0, 0.45);
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -28,12 +38,13 @@
     color: var(--text-dark);
     margin: 0;
     padding: 20px;
-    transition: background-color 0.25s ease, color 0.25s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
   }
   .container { max-width: 1200px; margin: 0 auto; }
 
   @keyframes fadeSlideUp {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
   }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -44,146 +55,319 @@
   }
   @keyframes slideDown {
     from { opacity: 0; transform: translateY(-8px); max-height: 0; }
-    to { opacity: 1; transform: translateY(0); max-height: 600px; }
+    to { opacity: 1; transform: translateY(0); max-height: 800px; }
+  }
+  @keyframes finSwim {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-3px) rotate(2deg); }
+  }
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(26, 122, 184, 0.25); }
+    50% { box-shadow: 0 0 0 6px rgba(26, 122, 184, 0); }
+  }
+  @keyframes bubble {
+    0% { transform: translateY(0) scale(1); opacity: 0.5; }
+    100% { transform: translateY(-40px) scale(0.4); opacity: 0; }
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
   }
 
+  /* ---- Header ---- */
   header {
-    background-color: var(--primary-color);
-    background-image: radial-gradient(circle at 15% 20%, rgba(255,255,255,0.12) 0, transparent 45%),
-                       radial-gradient(circle at 85% 75%, rgba(255,255,255,0.10) 0, transparent 40%);
+    background: linear-gradient(135deg, #1a7ab8 0%, #0d5a8a 45%, #0a6e6a 100%);
+    background-size: 200% 200%;
     color: white;
-    padding: 40px 20px;
+    padding: 36px 24px 40px;
     text-align: center;
-    border-radius: 8px;
+    border-radius: var(--radius);
     margin-bottom: 12px;
     position: relative;
+    overflow: hidden;
     animation: fadeSlideUp 0.5s ease both;
+    box-shadow: var(--shadow);
   }
-  header h1 { margin: 0; font-size: 2.5em; }
-  header p.tagline { opacity: 0.95; margin-top: 8px; font-size: 1.05em; font-weight: 600; }
-  header p.subtag { opacity: 0.85; margin-top: 4px; font-size: 0.95em; }
-
-  .dark-toggle {
-    position: absolute; top: 16px; right: 16px;
-    background: rgba(255,255,255,0.18); border: none; color: white;
-    border-radius: 20px; padding: 6px 14px; cursor: pointer; font-size: 0.85em;
-    transition: background 0.15s ease, transform 0.15s ease;
+  header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 12% 30%, rgba(255,255,255,0.14) 0, transparent 42%),
+      radial-gradient(circle at 88% 70%, rgba(14,165,160,0.25) 0, transparent 40%);
+    pointer-events: none;
   }
-  .dark-toggle:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
-
-  .admin-toggle {
-    position: absolute; top: 16px; left: 16px;
-    background: rgba(255,255,255,0.18); border: none; color: white;
-    border-radius: 20px; padding: 6px 14px; cursor: pointer; font-size: 0.85em;
-    transition: background 0.15s ease, transform 0.15s ease;
+  .header-bubbles span {
+    position: absolute;
+    bottom: 10%;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    animation: bubble 4s ease-in infinite;
+    pointer-events: none;
   }
-  .admin-toggle:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
+  .header-bubbles span:nth-child(1) { left: 15%; animation-delay: 0s; }
+  .header-bubbles span:nth-child(2) { left: 45%; width: 5px; height: 5px; animation-delay: 1.2s; }
+  .header-bubbles span:nth-child(3) { left: 72%; animation-delay: 0.6s; }
+  .header-bubbles span:nth-child(4) { left: 88%; width: 6px; height: 6px; animation-delay: 2s; }
 
-  .free-banner { text-align: center; margin-bottom: 20px; color: var(--primary-color); font-size: 0.9em; font-weight: 600; animation: fadeIn 0.6s ease both; animation-delay: 0.1s; }
+  .brand {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    position: relative; z-index: 1;
+  }
+  .shark-logo {
+    width: 56px; height: 56px;
+    flex-shrink: 0;
+    animation: finSwim 3s ease-in-out infinite;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+    transition: transform 0.25s ease;
+  }
+  .shark-logo:hover { transform: scale(1.08) rotate(-4deg); animation-play-state: paused; }
+  header h1 { margin: 0; font-size: 2.35em; letter-spacing: -0.02em; position: relative; z-index: 1; }
+  header p.tagline { opacity: 0.95; margin-top: 10px; font-size: 1.05em; font-weight: 600; position: relative; z-index: 1; }
+  header p.subtag { opacity: 0.85; margin-top: 4px; font-size: 0.95em; position: relative; z-index: 1; }
+
+  .header-actions {
+    position: absolute; top: 14px; right: 14px; left: 14px;
+    display: flex; justify-content: space-between; align-items: center;
+    z-index: 2; gap: 8px; flex-wrap: wrap;
+  }
+  .header-actions-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  .hdr-btn {
+    background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.2);
+    color: white; border-radius: 20px; padding: 7px 14px; cursor: pointer;
+    font-size: 0.85em; font-weight: 600;
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    backdrop-filter: blur(6px);
+  }
+  .hdr-btn:hover { background: rgba(255,255,255,0.28); transform: translateY(-1px); }
+  .hdr-btn:active { transform: scale(0.97); }
+  .hdr-btn.user-active {
+    background: rgba(255,255,255,0.28);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.25);
+  }
+
+  .free-banner {
+    text-align: center; margin-bottom: 16px; color: var(--primary-color);
+    font-size: 0.9em; font-weight: 600;
+    animation: fadeIn 0.6s ease both; animation-delay: 0.1s;
+  }
 
   .stats-strip {
-    display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;
-    margin-bottom: 25px; font-size: 0.9em; color: var(--text-dark); opacity: 0.8;
+    display: flex; justify-content: center; gap: 28px; flex-wrap: wrap;
+    margin-bottom: 22px; font-size: 0.9em; color: var(--text-dark); opacity: 0.85;
     animation: fadeIn 0.6s ease both; animation-delay: 0.15s;
   }
+  .stats-strip span {
+    background: var(--card-bg); border: 1px solid var(--border-soft);
+    padding: 8px 16px; border-radius: 20px; box-shadow: var(--shadow);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .stats-strip span:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
   .stats-strip strong { color: var(--primary-color); }
 
+  /* ---- Controls ---- */
   .controls {
-    background: var(--card-bg); border: 1px solid var(--border-soft); border-radius: 10px;
-    padding: 18px; margin-bottom: 25px; animation: fadeSlideUp 0.5s ease both; animation-delay: 0.1s;
-    transition: background-color 0.25s ease, border-color 0.25s ease;
+    background: var(--card-bg); border: 1px solid var(--border-soft); border-radius: var(--radius);
+    padding: 18px; margin-bottom: 22px; animation: fadeSlideUp 0.5s ease both; animation-delay: 0.1s;
+    box-shadow: var(--shadow); transition: background-color 0.25s ease, border-color 0.25s ease;
   }
   .controls-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
   .controls-row:last-child { margin-bottom: 0; }
   #searchInput {
-    flex: 1; min-width: 200px; padding: 10px 14px; border-radius: 6px;
+    flex: 1; min-width: 200px; padding: 11px 16px; border-radius: 8px;
     border: 1px solid var(--border-soft); background: var(--background-light); color: var(--text-dark);
     font-size: 1em; transition: box-shadow 0.15s ease, border-color 0.15s ease;
   }
-  #searchInput:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(52,152,219,0.15); }
-  .btn { padding: 10px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: background 0.15s ease, transform 0.1s ease; }
+  #searchInput:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(26,122,184,0.18); }
+
+  .btn {
+    padding: 10px 16px; border-radius: 8px; border: none; cursor: pointer;
+    font-weight: 600; font-size: 0.9em;
+    transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+  }
   .btn:active { transform: scale(0.97); }
   .btn-primary { background: var(--primary-color); color: white; }
-  .btn-primary:hover { background: #2980b9; }
+  .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 4px 12px rgba(26,122,184,0.3); }
   .btn-ghost { background: transparent; border: 1px solid var(--border-soft); color: var(--text-dark); }
   .btn-ghost:hover { background: var(--background-light); }
   .btn-ghost.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+  .btn-accent { background: var(--accent); color: white; }
+  .btn-accent:hover { background: #0c8f8a; }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 
   .chip {
     padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border-soft);
     background: var(--background-light); color: var(--text-dark); cursor: pointer;
-    font-size: 0.85em; font-weight: 600; transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+    font-size: 0.82em; font-weight: 600;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
   }
-  .chip:hover { transform: translateY(-1px); }
-  .chip.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+  .chip:hover { transform: translateY(-2px); box-shadow: 0 3px 8px rgba(0,0,0,0.08); }
+  .chip.active {
+    background: var(--primary-color); color: white; border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(26,122,184,0.3);
+  }
   #chipRow { display: flex; gap: 8px; flex-wrap: wrap; }
 
-  .resource-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+  /* ---- Resource cards ---- */
+  .resource-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
   .resource-card {
-    position: relative; background-color: var(--card-bg); border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06); padding: 20px;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.25s ease;
+    position: relative; background-color: var(--card-bg); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.25s ease;
     border-left: 5px solid var(--primary-color); display: flex; flex-direction: column;
     animation: fadeSlideUp 0.4s ease both;
   }
-  .resource-card:hover { transform: translateY(-4px); box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); }
-  .resource-card h3 { margin: 0 0 6px 0; font-size: 1.05em; padding-right: 30px; }
-  .resource-card .category-tag { display: inline-block; font-size: 0.7em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--primary-color); margin-bottom: 8px; }
-  .resource-card p.desc { margin: 0 0 12px 0; color: var(--text-dark); opacity: 0.75; line-height: 1.4; font-size: 0.9em; flex-grow: 1; }
+  .resource-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
+  .resource-card.highlighted {
+    animation: pulseGlow 1.5s ease 2, fadeSlideUp 0.4s ease both;
+    outline: 2px solid var(--primary-color);
+  }
+  .resource-card h3 { margin: 0 0 6px 0; font-size: 1.05em; padding-right: 32px; }
+  .resource-card .category-tag {
+    display: inline-block; font-size: 0.7em; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.4px; color: var(--primary-color); margin-bottom: 8px;
+  }
+  .resource-card p.desc {
+    margin: 0 0 12px 0; color: var(--text-dark); opacity: 0.75;
+    line-height: 1.45; font-size: 0.9em; flex-grow: 1;
+  }
 
   .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
   .tag-pill {
     font-size: 0.7em; padding: 3px 9px; border-radius: 20px; background: var(--background-light);
-    border: 1px solid var(--border-soft); color: var(--text-dark); opacity: 0.75; cursor: pointer;
-    transition: background 0.15s ease, opacity 0.15s ease;
+    border: 1px solid var(--border-soft); color: var(--text-dark); opacity: 0.8; cursor: pointer;
+    transition: background 0.15s ease, opacity 0.15s ease, transform 0.1s ease;
   }
-  .tag-pill:hover { opacity: 1; background: rgba(52,152,219,0.12); }
+  .tag-pill:hover { opacity: 1; background: rgba(26,122,184,0.12); transform: scale(1.05); }
   .tag-pill.active { background: var(--primary-color); color: white; opacity: 1; border-color: var(--primary-color); }
 
-  .card-footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .cta-link { display: inline-block; background-color: var(--primary-color); color: white; padding: 8px 16px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 0.85em; transition: background 0.15s ease; }
-  .cta-link:hover { background-color: #2980b9; }
-
-  .upvote-btn {
-    background: none; border: 1px solid var(--border-soft); border-radius: 20px; cursor: pointer;
-    font-size: 0.8em; padding: 5px 10px; color: var(--text-dark); display: flex; align-items: center; gap: 5px;
-    transition: background 0.15s ease, border-color 0.15s ease;
+  .card-footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .card-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .cta-link {
+    display: inline-block; background-color: var(--primary-color); color: white;
+    padding: 8px 14px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 0.85em;
+    transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
   }
-  .upvote-btn.upvoted { background: rgba(52,152,219,0.12); border-color: var(--primary-color); color: var(--primary-color); }
-  .upvote-btn .arrow.pop { animation: pop 0.3s ease; }
+  .cta-link:hover { background-color: var(--primary-hover); box-shadow: 0 3px 10px rgba(26,122,184,0.3); transform: translateY(-1px); }
+
+  .icon-btn {
+    background: none; border: 1px solid var(--border-soft); border-radius: 20px; cursor: pointer;
+    font-size: 0.8em; padding: 5px 10px; color: var(--text-dark);
+    display: inline-flex; align-items: center; gap: 4px;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease, color 0.15s ease;
+  }
+  .icon-btn:hover { background: var(--background-light); transform: translateY(-1px); }
+  .icon-btn.upvoted { background: rgba(26,122,184,0.12); border-color: var(--primary-color); color: var(--primary-color); }
+  .icon-btn .arrow.pop { animation: pop 0.3s ease; }
+  .icon-btn.open { background: rgba(26,122,184,0.1); border-color: var(--primary-color); color: var(--primary-color); }
 
   .star-btn {
     position: absolute; top: 14px; right: 14px; background: none; border: none;
-    cursor: pointer; font-size: 1.2em; color: #ccc; line-height: 1; transition: transform 0.1s ease;
+    cursor: pointer; font-size: 1.25em; color: #ccc; line-height: 1;
+    transition: transform 0.15s ease, color 0.15s ease;
   }
+  .star-btn:hover { transform: scale(1.15); color: #f0b429; }
   .star-btn.favorited { color: #f39c12; }
   .star-btn.pop { animation: pop 0.35s ease; }
 
-  .submitted-badge { font-size: 0.65em; font-weight: 700; color: #16a085; background: rgba(22,160,133,0.12); padding: 2px 8px; border-radius: 20px; margin-left: 6px; vertical-align: middle; }
-  .pending-badge { font-size: 0.65em; font-weight: 700; color: #d35400; background: rgba(211,84,0,0.12); padding: 2px 8px; border-radius: 20px; margin-left: 6px; vertical-align: middle; }
+  .submitted-badge {
+    font-size: 0.65em; font-weight: 700; color: #16a085;
+    background: rgba(22,160,133,0.12); padding: 2px 8px; border-radius: 20px;
+    margin-left: 6px; vertical-align: middle;
+  }
+
+  /* ---- Share menu ---- */
+  .share-wrap { position: relative; }
+  .share-menu {
+    display: none; position: absolute; bottom: calc(100% + 6px); right: 0;
+    background: var(--card-bg); border: 1px solid var(--border-soft); border-radius: 10px;
+    box-shadow: var(--shadow-hover); padding: 6px; min-width: 160px; z-index: 20;
+    animation: fadeSlideUp 0.15s ease both;
+  }
+  .share-menu.open { display: block; }
+  .share-menu button {
+    display: block; width: 100%; text-align: left; background: none; border: none;
+    padding: 8px 12px; border-radius: 6px; cursor: pointer; color: var(--text-dark);
+    font-size: 0.85em; font-weight: 600;
+    transition: background 0.12s ease;
+  }
+  .share-menu button:hover { background: var(--background-light); }
+
+  /* ---- Comments ---- */
+  .comments-panel {
+    display: none; margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid var(--border-soft);
+    animation: slideDown 0.25s ease;
+  }
+  .comments-panel.open { display: block; }
+  .comment-list { max-height: 220px; overflow-y: auto; margin-bottom: 10px; }
+  .comment-item {
+    padding: 8px 0; border-bottom: 1px solid var(--border-soft); font-size: 0.88em;
+    animation: fadeIn 0.25s ease both;
+  }
+  .comment-item:last-child { border-bottom: none; }
+  .comment-meta { font-size: 0.78em; opacity: 0.65; margin-bottom: 3px; display: flex; justify-content: space-between; gap: 8px; }
+  .comment-meta .username { color: var(--primary-color); font-weight: 700; opacity: 1; }
+  .comment-body { line-height: 1.4; word-break: break-word; }
+  .comment-delete {
+    background: none; border: none; color: #e74c3c; cursor: pointer;
+    font-size: 0.75em; padding: 0; opacity: 0.7;
+  }
+  .comment-delete:hover { opacity: 1; }
+  .comment-compose { display: flex; gap: 8px; flex-wrap: wrap; }
+  .comment-compose textarea {
+    flex: 1; min-width: 160px; min-height: 52px; padding: 8px 10px; border-radius: 8px;
+    border: 1px solid var(--border-soft); background: var(--background-light); color: var(--text-dark);
+    font-family: inherit; font-size: 0.88em; resize: vertical;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .comment-compose textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(26,122,184,0.15); }
+  .comment-gate {
+    font-size: 0.85em; opacity: 0.8; padding: 10px 12px; border-radius: 8px;
+    background: var(--background-light); border: 1px dashed var(--border-soft);
+  }
+  .comment-gate button { margin-left: 6px; }
 
   .empty-state { text-align: center; padding: 40px 20px; opacity: 0.7; animation: fadeIn 0.4s ease both; }
 
-  #submitPanel, #adminPanel {
-    background: var(--card-bg); border: 1px solid var(--border-soft); border-radius: 10px;
-    padding: 20px; margin-bottom: 25px; display: none; overflow: hidden; transition: background-color 0.25s ease;
+  /* ---- Panels ---- */
+  #submitPanel, #adminPanel, #authPanel {
+    background: var(--card-bg); border: 1px solid var(--border-soft); border-radius: var(--radius);
+    padding: 22px; margin-bottom: 22px; display: none; overflow: hidden;
+    box-shadow: var(--shadow); transition: background-color 0.25s ease;
   }
-  #submitPanel.open, #adminPanel.open { display: block; animation: slideDown 0.25s ease; }
-  #submitPanel h3, #adminPanel h3 { margin-top: 0; }
-  #submitPanel .form-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
-  #submitPanel input, #submitPanel select, #submitPanel textarea {
-    flex: 1; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid var(--border-soft);
+  #submitPanel.open, #adminPanel.open, #authPanel.open { display: block; animation: slideDown 0.28s ease; }
+  #submitPanel h3, #adminPanel h3, #authPanel h3 { margin-top: 0; }
+  .form-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .form-row input, .form-row select, .form-row textarea,
+  #submitPanel input, #submitPanel select, #submitPanel textarea,
+  #authPanel input {
+    flex: 1; min-width: 180px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-soft);
     background: var(--background-light); color: var(--text-dark); font-family: inherit; font-size: 0.9em;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }
-  #submitPanel input:focus, #submitPanel select:focus, #submitPanel textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(52,152,219,0.15); }
+  .form-row input:focus, .form-row select:focus, .form-row textarea:focus,
+  #submitPanel input:focus, #submitPanel select:focus, #submitPanel textarea:focus,
+  #authPanel input:focus {
+    outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(26,122,184,0.15);
+  }
   #submitPanel textarea { min-height: 60px; resize: vertical; }
-  #submitStatus { font-size: 0.85em; margin-top: 8px; }
-  #submitStatus.success { color: #16a085; }
-  #submitStatus.error { color: #e74c3c; }
+  #submitStatus, #authStatus { font-size: 0.85em; margin-top: 8px; min-height: 1.2em; }
+  .status-ok { color: #16a085; }
+  .status-err { color: #e74c3c; }
+
+  .auth-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .auth-tabs .chip { font-size: 0.9em; }
+  .auth-hint { font-size: 0.85em; opacity: 0.75; margin: -4px 0 14px; line-height: 1.4; }
+  .username-hint { font-size: 0.78em; opacity: 0.65; margin-top: -6px; margin-bottom: 10px; }
 
   .admin-row {
     display: flex; justify-content: space-between; align-items: center; gap: 10px;
@@ -198,61 +382,145 @@
   .btn-reject { background: #e74c3c; color: white; }
   .btn-reject:hover { background: #c0392b; }
 
-  .note-box { font-size: 0.8em; opacity: 0.7; background: var(--background-light); border-radius: 6px; padding: 10px 14px; margin-top: 10px; }
+  .note-box { font-size: 0.8em; opacity: 0.7; background: var(--background-light); border-radius: 8px; padding: 10px 14px; margin-top: 10px; }
 
   #demoBanner {
-    display: none;
-    text-align: center; font-size: 0.85em; padding: 10px 16px; border-radius: 8px;
-    background: rgba(211,84,0,0.1); color: #d35400; margin-bottom: 20px;
+    display: none; text-align: center; font-size: 0.85em; padding: 10px 16px; border-radius: 8px;
+    background: rgba(211,84,0,0.1); color: #d35400; margin-bottom: 18px;
     animation: fadeIn 0.5s ease both;
   }
   #demoBanner.show { display: block; }
 
   .login-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
-  .login-row input { flex: 1; min-width: 180px; padding: 10px; border-radius: 6px; border: 1px solid var(--border-soft); background: var(--background-light); color: var(--text-dark); }
+  .login-row input {
+    flex: 1; min-width: 160px; padding: 10px; border-radius: 8px;
+    border: 1px solid var(--border-soft); background: var(--background-light); color: var(--text-dark);
+  }
   .login-error { color: #e74c3c; font-size: 0.85em; margin-top: 6px; }
 
-  footer { text-align: center; margin-top: 50px; padding: 20px; border-top: 1px solid var(--border-soft); color: var(--text-dark); opacity: 0.6; font-size: 0.85em; }
+  /* Toast */
+  #toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: #1e293b; color: white; padding: 12px 22px; border-radius: 10px;
+    font-size: 0.9em; font-weight: 600; z-index: 1000;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+  }
+  #toast.show { opacity: 1; animation: toastIn 0.25s ease; pointer-events: auto; }
+  body.dark #toast { background: #e8edf2; color: #0f1419; }
+
+  footer {
+    text-align: center; margin-top: 50px; padding: 24px;
+    border-top: 1px solid var(--border-soft); color: var(--text-dark); opacity: 0.65; font-size: 0.85em;
+  }
   footer a { color: var(--primary-color); }
 
-  @media (max-width: 600px) {
-    header h1 { font-size: 1.8em; }
-    .admin-toggle { position: static; display: inline-block; margin-bottom: 10px; }
-    .dark-toggle { position: static; display: inline-block; margin-top: 12px; }
+  @media (max-width: 640px) {
+    header h1 { font-size: 1.65em; }
+    .header-actions { position: static; justify-content: center; margin-bottom: 12px; }
+    .shark-logo { width: 44px; height: 44px; }
+    .brand { flex-direction: column; gap: 8px; }
   }
 </style>
 </head>
 <body>
 <div class="container">
   <header>
-    <button class="admin-toggle" id="adminToggle">🛠️ Admin</button>
-    <button class="dark-toggle" id="darkToggle">🌙 Dark mode</button>
-    <h1>🕸️ WebShark Library.AI</h1>
+    <div class="header-bubbles" aria-hidden="true">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <div class="header-actions">
+      <button class="hdr-btn" id="adminToggle" type="button">🛠️ Admin</button>
+      <div class="header-actions-right">
+        <button class="hdr-btn" id="authToggle" type="button">👤 Sign in</button>
+        <button class="hdr-btn" id="darkToggle" type="button">🌙 Dark</button>
+      </div>
+    </div>
+    <div class="brand">
+      <!-- Custom shark mark (replaces web/spider logo) -->
+      <svg class="shark-logo" viewBox="0 0 64 64" role="img" aria-label="WebShark logo">
+        <defs>
+          <linearGradient id="sharkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="100%" stop-color="#c8e8f8"/>
+          </linearGradient>
+        </defs>
+        <ellipse cx="32" cy="34" rx="26" ry="14" fill="url(#sharkGrad)" opacity="0.95"/>
+        <path d="M48 28 L60 18 L52 32 Z" fill="url(#sharkGrad)"/>
+        <path d="M14 34 L4 28 L6 36 L4 42 L14 36 Z" fill="url(#sharkGrad)"/>
+        <path d="M28 20 L34 6 L40 20 Z" fill="url(#sharkGrad)"/>
+        <path d="M22 46 L28 54 L34 46" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
+        <circle cx="46" cy="30" r="2.2" fill="#0d3a5c"/>
+        <path d="M18 32 Q32 38 48 32" fill="none" stroke="#0d5a8a" stroke-width="1.2" opacity="0.35"/>
+      </svg>
+      <h1>WebShark Library.AI</h1>
+    </div>
     <p class="tagline">Forever Free, One-Pass Ticket to the Universe of Data</p>
-    <p class="subtag">A living library of AI, Machine Learning & Data Analytics resources.</p>
+    <p class="subtag">A living library of AI, Machine Learning &amp; Data Analytics resources.</p>
   </header>
-  <p class="free-banner">✦ This is a living library — everything is free, and you can add to it below ✦</p>
-  <p id="demoBanner">Running in local demo mode — submissions and votes are only visible in your browser. See SETUP.md to connect a real shared backend.</p>
+
+  <p class="free-banner">✦ Browse everything free — create a free account only if you want to comment &amp; join the conversation ✦</p>
+  <p id="demoBanner">Running in local demo mode — accounts, comments, submissions, and votes stay in your browser. See SETUP.md to connect Supabase.</p>
 
   <div class="stats-strip">
     <span><strong id="statTotal">0</strong> resources</span>
     <span><strong id="statCategories">0</strong> categories</span>
-    <span><strong id="statCommunity">0</strong> added by the community</span>
-    <span><strong id="statFavorites">0</strong> in your favorites</span>
+    <span><strong id="statCommunity">0</strong> community-added</span>
+    <span><strong id="statFavorites">0</strong> favorites</span>
+    <span><strong id="statComments">0</strong> comments</span>
   </div>
 
   <div class="controls">
     <div class="controls-row">
-      <input type="text" id="searchInput" placeholder="Search resources (e.g. 'pytorch', 'datasets', 'SQL')...">
-      <button class="btn btn-ghost" id="favToggle">⭐ Favorites only</button>
-      <button class="btn btn-primary" id="openSubmit">+ Suggest a resource</button>
+      <input type="text" id="searchInput" placeholder="Search resources (e.g. 'causal', 'SQL', 'feature store')..." autocomplete="off">
+      <button class="btn btn-ghost" id="favToggle" type="button">⭐ Favorites only</button>
+      <button class="btn btn-primary" id="openSubmit" type="button">+ Suggest a resource</button>
     </div>
     <div class="controls-row" id="chipRow"></div>
   </div>
 
+  <!-- Auth: optional — only needed for social features -->
+  <div id="authPanel">
+    <h3 id="authTitle">Create a free account</h3>
+    <p class="auth-hint">
+      You do <strong>not</strong> need an account to browse, search, favorite, or open any resource.
+      Sign up only if you want to leave comments and participate in discussions.
+    </p>
+    <div class="auth-tabs">
+      <button type="button" class="chip active" id="tabSignup">Sign up</button>
+      <button type="button" class="chip" id="tabLogin">Log in</button>
+    </div>
+    <div id="signupForm">
+      <div class="form-row">
+        <input type="text" id="suUsername" placeholder="Username (public, e.g. data_shark)" maxlength="24" autocomplete="username">
+        <input type="email" id="suEmail" placeholder="Email" autocomplete="email">
+      </div>
+      <p class="username-hint">3–24 characters: letters, numbers, and underscores only.</p>
+      <div class="form-row">
+        <input type="password" id="suPassword" placeholder="Password (min 6 characters)" autocomplete="new-password">
+        <input type="password" id="suPassword2" placeholder="Confirm password" autocomplete="new-password">
+      </div>
+      <div class="form-row">
+        <button class="btn btn-primary" id="signupBtn" type="button">Create account</button>
+        <button class="btn btn-ghost" id="cancelAuth" type="button">Cancel</button>
+      </div>
+    </div>
+    <div id="loginForm" style="display:none;">
+      <div class="form-row">
+        <input type="email" id="liEmail" placeholder="Email" autocomplete="email">
+        <input type="password" id="liPassword" placeholder="Password" autocomplete="current-password">
+      </div>
+      <div class="form-row">
+        <button class="btn btn-primary" id="loginBtn" type="button">Log in</button>
+        <button class="btn btn-ghost" id="cancelAuth2" type="button">Cancel</button>
+      </div>
+    </div>
+    <div id="authStatus"></div>
+  </div>
+
   <div id="submitPanel">
     <h3>Suggest a resource</h3>
-    <p style="opacity:0.75; font-size:0.9em; margin-top:-8px;">Add a link you find yourself using often. New submissions go into a review queue before appearing in the main library.</p>
+    <p style="opacity:0.75; font-size:0.9em; margin-top:-8px;">Add a link you find yourself using often. New submissions go into a review queue before appearing in the main library. No account required.</p>
     <div class="form-row">
       <input type="text" id="subTitle" placeholder="Resource name">
       <select id="subCategory"></select>
@@ -265,8 +533,8 @@
       <textarea id="subDesc" placeholder="One or two sentences on why it's useful"></textarea>
     </div>
     <div class="form-row">
-      <button class="btn btn-primary" id="submitResource">Submit for review</button>
-      <button class="btn btn-ghost" id="cancelSubmit">Cancel</button>
+      <button class="btn btn-primary" id="submitResource" type="button">Submit for review</button>
+      <button class="btn btn-ghost" id="cancelSubmit" type="button">Cancel</button>
     </div>
     <div id="submitStatus"></div>
   </div>
@@ -274,18 +542,16 @@
   <div id="adminPanel">
     <h3>Moderation queue</h3>
     <p style="opacity:0.75; font-size:0.9em; margin-top:-8px;">Review community submissions before they go live.</p>
-
     <div id="adminLoginForm" style="display:none;">
       <div class="login-row">
         <input type="email" id="adminEmail" placeholder="Admin email">
         <input type="password" id="adminPassword" placeholder="Password">
-        <button class="btn btn-primary" id="adminLoginBtn">Log in</button>
+        <button class="btn btn-primary" id="adminLoginBtn" type="button">Log in as admin</button>
       </div>
       <div class="login-error" id="adminLoginError"></div>
     </div>
-
     <div id="adminList"></div>
-    <div class="note-box" id="adminNote">⚠️ Heads up: this admin view is a client-side demo, gated by a simple prompt — not real authentication. Connect a Supabase backend (see SETUP.md) to switch to real login-based moderation.</div>
+    <div class="note-box" id="adminNote">⚠️ Demo admin is passcode-gated. Connect Supabase (SETUP.md) for real admin auth.</div>
   </div>
 
   <div class="resource-grid" id="resourceGrid"></div>
@@ -293,90 +559,181 @@
 
   <footer>
     &copy; 2026 WebShark Library.AI | Built by and for data people. Forever free, always.<br>
-    <a href="resources.json" target="_blank">API preview (JSON)</a> · <a href="rss.xml" target="_blank">RSS feed</a>
+    Resources are open to everyone · Accounts unlock comments &amp; discussion only
   </footer>
 </div>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script>
+/* ========================================================================
+   WebShark Library.AI — curated + community data science hub
+   Browse free. Sign up only for social features (comments).
+   ======================================================================== */
+
 const BASE_RESOURCES = [
+  // AI Models & Research
   {t:"arXiv: Machine Learning (cs.LG)", u:"https://arxiv.org/list/cs.LG/recent", c:"AI Models", d:"Daily feed of new ML research preprints.", tags:["research","daily-updates"]},
   {t:"Papers with Code", u:"https://paperswithcode.com/", c:"AI Models", d:"Research papers linked directly to their code and benchmarks.", tags:["research","code"]},
   {t:"Google DeepMind Research", u:"https://deepmind.google/research/", c:"AI Models", d:"Publications and blog posts from DeepMind.", tags:["research"]},
   {t:"OpenAI Research", u:"https://openai.com/research", c:"AI Models", d:"Research index and technical reports from OpenAI.", tags:["research"]},
+  {t:"Hugging Face Models", u:"https://huggingface.co/models", c:"AI Models", d:"Huge catalog of open pretrained models you can run or fine-tune.", tags:["pretrained-models","open-source"]},
+  {t:"Allen Institute for AI", u:"https://allenai.org/", c:"AI Models", d:"Open research and tools from AI2 (OLMo, Semantic Scholar, and more).", tags:["research","open-source"]},
 
+  // ML Frameworks
   {t:"PyTorch Docs", u:"https://pytorch.org/docs/stable/index.html", c:"ML Frameworks", d:"Official documentation for the PyTorch deep learning library.", tags:["docs","deep-learning"]},
   {t:"TensorFlow Learn", u:"https://www.tensorflow.org/learn", c:"ML Frameworks", d:"Guides and tutorials for TensorFlow and Keras.", tags:["docs","deep-learning","beginner-friendly"]},
   {t:"scikit-learn", u:"https://scikit-learn.org/stable/", c:"ML Frameworks", d:"The standard toolkit for classical ML in Python.", tags:["docs","beginner-friendly"]},
   {t:"Hugging Face Transformers", u:"https://huggingface.co/docs/transformers/index", c:"ML Frameworks", d:"Pretrained transformer models and easy fine-tuning.", tags:["docs","nlp","pretrained-models"]},
   {t:"XGBoost Docs", u:"https://xgboost.readthedocs.io/", c:"ML Frameworks", d:"Gradient boosting library used everywhere in tabular ML.", tags:["docs","tabular-data"]},
+  {t:"LightGBM", u:"https://lightgbm.readthedocs.io/", c:"ML Frameworks", d:"Fast gradient boosting from Microsoft — strong on large tabular data.", tags:["docs","tabular-data"]},
+  {t:"JAX", u:"https://jax.readthedocs.io/", c:"ML Frameworks", d:"NumPy-style compute with automatic differentiation and accelerators.", tags:["docs","research","advanced"]},
+  {t:"Polars", u:"https://docs.pola.rs/", c:"ML Frameworks", d:"Blazing-fast DataFrame library — increasingly preferred over pandas for large data.", tags:["docs","data-wrangling"]},
 
+  // Visualization & BI
   {t:"Plotly for Python", u:"https://plotly.com/python/", c:"Visualization & BI", d:"Interactive charting library with a huge example gallery.", tags:["docs","interactive"]},
   {t:"Observable", u:"https://observablehq.com/", c:"Visualization & BI", d:"Notebooks built for live, shareable data visualization.", tags:["interactive","javascript"]},
   {t:"D3.js", u:"https://d3js.org/", c:"Visualization & BI", d:"Low-level library for fully custom data visualizations.", tags:["javascript","advanced"]},
   {t:"Matplotlib", u:"https://matplotlib.org/stable/index.html", c:"Visualization & BI", d:"The foundational Python plotting library.", tags:["docs","beginner-friendly"]},
+  {t:"seaborn", u:"https://seaborn.pydata.org/", c:"Visualization & BI", d:"Statistical graphics built on Matplotlib — great defaults for EDA.", tags:["docs","eda"]},
+  {t:"Apache Superset", u:"https://superset.apache.org/", c:"Visualization & BI", d:"Open-source BI platform for dashboards and SQL exploration.", tags:["bi","open-source","sql"]},
+  {t:"Metabase", u:"https://www.metabase.com/", c:"Visualization & BI", d:"Friendly open-source BI for questions, dashboards, and sharing.", tags:["bi","open-source"]},
 
+  // MLOps & Deployment
   {t:"Docker Docs", u:"https://docs.docker.com/", c:"MLOps & Deployment", d:"Containerize models and pipelines for reliable deployment.", tags:["docs","infrastructure"]},
   {t:"Kubernetes Docs", u:"https://kubernetes.io/docs/home/", c:"MLOps & Deployment", d:"Orchestrate containers at scale.", tags:["docs","infrastructure","advanced"]},
   {t:"MLflow", u:"https://mlflow.org/docs/latest/index.html", c:"MLOps & Deployment", d:"Track experiments, package models, and manage the ML lifecycle.", tags:["docs","experiment-tracking"]},
   {t:"DVC (Data Version Control)", u:"https://dvc.org/doc", c:"MLOps & Deployment", d:"Git-like version control for datasets and models.", tags:["docs","versioning"]},
+  {t:"BentoML", u:"https://docs.bentoml.com/", c:"MLOps & Deployment", d:"Package and serve ML models as production APIs.", tags:["docs","serving"]},
+  {t:"Feast Feature Store", u:"https://docs.feast.dev/", c:"MLOps & Deployment", d:"Open-source feature store for training/serving consistency.", tags:["feature-store","docs"]},
 
+  // Datasets
   {t:"Kaggle Datasets", u:"https://www.kaggle.com/datasets", c:"Datasets", d:"Huge searchable catalog of public datasets.", tags:["free-download","beginner-friendly"]},
   {t:"Hugging Face Datasets", u:"https://huggingface.co/datasets", c:"Datasets", d:"Datasets ready to load directly into ML pipelines.", tags:["free-download","nlp"]},
   {t:"UCI ML Repository", u:"https://archive.ics.uci.edu/", c:"Datasets", d:"Classic, well-documented datasets for benchmarking.", tags:["free-download","beginner-friendly"]},
   {t:"Google Dataset Search", u:"https://datasetsearch.research.google.com/", c:"Datasets", d:"Search engine that indexes datasets across the web.", tags:["search-tool"]},
+  {t:"OpenML", u:"https://www.openml.org/", c:"Datasets", d:"Collaborative platform for sharing datasets and ML experiments.", tags:["free-download","benchmarks"]},
+  {t:"Awesome Public Datasets", u:"https://github.com/awesomedata/awesome-public-datasets", c:"Datasets", d:"Curated GitHub list of high-quality public datasets by domain.", tags:["free-download","curated"]},
 
+  // SQL & Databases
+  {t:"Mode SQL Tutorial", u:"https://mode.com/sql-tutorial/", c:"SQL & Databases", d:"Clear, free SQL lessons with interactive practice.", tags:["sql","course","beginner-friendly"]},
+  {t:"PostgreSQL Docs", u:"https://www.postgresql.org/docs/current/", c:"SQL & Databases", d:"Authoritative reference for Postgres — the data stack default.", tags:["sql","docs"]},
+  {t:"dbt Docs", u:"https://docs.getdbt.com/", c:"SQL & Databases", d:"Analytics engineering toolkit for transforming data in the warehouse.", tags:["sql","analytics-engineering"]},
+  {t:"DuckDB Docs", u:"https://duckdb.org/docs/", c:"SQL & Databases", d:"In-process analytical SQL database — perfect for local data science.", tags:["sql","docs","local"]},
+  {t:"SQLBolt", u:"https://sqlbolt.com/", c:"SQL & Databases", d:"Interactive SQL lessons you can complete in the browser.", tags:["sql","course","beginner-friendly"]},
+  {t:"Use The Index, Luke", u:"https://use-the-index-luke.com/", c:"SQL & Databases", d:"Practical guide to SQL indexing and performance.", tags:["sql","performance","advanced"]},
+
+  // Feature Engineering & EDA
+  {t:"Feature Engineering for ML (book site)", u:"https://www.featureengineeringbook.com/", c:"Feature Engineering", d:"Practical guidance on building features that actually improve models.", tags:["feature-engineering","book"]},
+  {t:"pandas Docs", u:"https://pandas.pydata.org/docs/", c:"Feature Engineering", d:"The workhorse of tabular data wrangling in Python.", tags:["docs","data-wrangling"]},
+  {t:"ydata-profiling", u:"https://docs.profiling.ydata.ai/", c:"Feature Engineering", d:"One-line EDA reports for pandas DataFrames.", tags:["eda","docs"]},
+  {t:"Category Encoders", u:"https://contrib.scikit-learn.org/category_encoders/", c:"Feature Engineering", d:"Sklearn-compatible encoders for high-cardinality categoricals.", tags:["feature-engineering","docs"]},
+  {t:"Great Expectations", u:"https://greatexpectations.io/docs/", c:"Feature Engineering", d:"Data quality tests and documentation for pipelines.", tags:["data-quality","docs"]},
+
+  // Stats, Math & Causal
+  {t:"Khan Academy: Statistics", u:"https://www.khanacademy.org/math/statistics-probability", c:"Stats & Math", d:"Free, structured stats and probability fundamentals.", tags:["course","beginner-friendly"]},
+  {t:"StatQuest (YouTube)", u:"https://www.youtube.com/@statquest", c:"Stats & Math", d:"Clear, visual explanations of statistics and ML concepts.", tags:["video","beginner-friendly"]},
+  {t:"3Blue1Brown", u:"https://www.3blue1brown.com/", c:"Stats & Math", d:"Beautifully visualized explanations of linear algebra, calculus & neural nets.", tags:["video"]},
+  {t:"Seeing Theory", u:"https://seeing-theory.brown.edu/", c:"Stats & Math", d:"Interactive visualizations of core probability and stats ideas.", tags:["interactive","beginner-friendly"]},
+  {t:"Causal Inference: The Mixtape", u:"https://mixtape.scunning.com/", c:"Causal Inference", d:"Free online book on modern causal methods for social science & industry.", tags:["causal","book","free"]},
+  {t:"DoWhy", u:"https://www.pywhy.org/dowhy/", c:"Causal Inference", d:"Python library for end-to-end causal inference workflows.", tags:["causal","docs","python"]},
+  {t:"EconML", u:"https://econml.azurewebsites.net/", c:"Causal Inference", d:"Microsoft Research library for heterogeneous treatment effects.", tags:["causal","docs","advanced"]},
+
+  // Experimentation
+  {t:"Trustworthy Online Controlled Experiments (book site)", u:"https://exp-platform.com/book/", c:"Experimentation", d:"The standard industry book on A/B testing at scale.", tags:["ab-testing","book"]},
+  {t:"Statsig Docs", u:"https://docs.statsig.com/", c:"Experimentation", d:"Practical docs on feature flags and experiment design.", tags:["ab-testing","docs"]},
+  {t:"GrowthBook", u:"https://docs.growthbook.io/", c:"Experimentation", d:"Open-source feature flags and A/B testing platform.", tags:["ab-testing","open-source"]},
+
+  // NLP & LLMs
+  {t:"spaCy", u:"https://spacy.io/", c:"NLP & LLMs", d:"Industrial-strength NLP library for production pipelines.", tags:["nlp","docs"]},
+  {t:"LangChain Docs", u:"https://python.langchain.com/docs/", c:"NLP & LLMs", d:"Building blocks for LLM apps — chains, agents, retrieval.", tags:["llm","docs"]},
+  {t:"LlamaIndex", u:"https://docs.llamaindex.ai/", c:"NLP & LLMs", d:"Data framework for RAG and LLM-powered apps.", tags:["llm","rag","docs"]},
+  {t:"OpenAI API Docs", u:"https://platform.openai.com/docs", c:"NLP & LLMs", d:"Official API reference for GPT models and tools.", tags:["llm","api"]},
+  {t:"Anthropic Claude Docs", u:"https://docs.anthropic.com/", c:"NLP & LLMs", d:"API docs and guides for Claude models.", tags:["llm","api"]},
+  {t:"Prompt Engineering Guide", u:"https://www.promptingguide.ai/", c:"NLP & LLMs", d:"Community guide to prompting techniques and patterns.", tags:["llm","prompting","free"]},
+
+  // Time Series
+  {t:"statsmodels", u:"https://www.statsmodels.org/stable/index.html", c:"Time Series", d:"Statistical models including ARIMA, regression, and hypothesis tests.", tags:["docs","statistics"]},
+  {t:"Prophet", u:"https://facebook.github.io/prophet/", c:"Time Series", d:"Forecasting tool designed for business time series with seasonality.", tags:["forecasting","docs"]},
+  {t:"Nixtla / statsforecast", u:"https://nixtlaverse.nixtla.io/statsforecast/", c:"Time Series", d:"Fast, scalable classical forecasting models in Python.", tags:["forecasting","docs"]},
+
+  // Ethics & Responsible AI
+  {t:"Google Responsible AI Practices", u:"https://ai.google/responsibility/responsible-ai-practices/", c:"Ethics & Responsible AI", d:"Practical recommendations for fair, safe, and accountable ML systems.", tags:["ethics","guidelines"]},
+  {t:"Fairlearn", u:"https://fairlearn.org/", c:"Ethics & Responsible AI", d:"Python toolkit to assess and improve fairness of ML models.", tags:["ethics","docs","python"]},
+  {t:"Aequitas", u:"http://aequitas.dssg.io/", c:"Ethics & Responsible AI", d:"Bias and fairness audit toolkit for machine learning.", tags:["ethics","audit"]},
+
+  // Cheat Sheets
   {t:"Pandas Cheat Sheet", u:"https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf", c:"Cheat Sheets", d:"Quick reference for the pandas API.", tags:["quick-reference","beginner-friendly"]},
   {t:"NumPy Quickstart", u:"https://numpy.org/doc/stable/user/quickstart.html", c:"Cheat Sheets", d:"Core array operations at a glance.", tags:["quick-reference","beginner-friendly"]},
   {t:"Git Cheat Sheet", u:"https://education.github.com/git-cheat-sheet-education.pdf", c:"Cheat Sheets", d:"The Git commands you actually use, on one page.", tags:["quick-reference"]},
   {t:"SQL Command Reference", u:"https://www.postgresql.org/docs/current/sql-commands.html", c:"Cheat Sheets", d:"Full SQL command reference from the Postgres docs.", tags:["quick-reference","sql"]},
+  {t:"scikit-learn Algorithm Cheat Sheet", u:"https://scikit-learn.org/stable/machine_learning_map.html", c:"Cheat Sheets", d:"Interactive map of which estimator to try first.", tags:["quick-reference","beginner-friendly"]},
 
+  // Community
   {t:"Kaggle Competitions", u:"https://www.kaggle.com/competitions", c:"Community", d:"Live competitions to test and showcase your modeling skills.", tags:["practice","competitive"]},
   {t:"r/MachineLearning", u:"https://www.reddit.com/r/MachineLearning/", c:"Community", d:"One of the largest ML discussion communities online.", tags:["discussion"]},
   {t:"Stack Overflow: ML Tag", u:"https://stackoverflow.com/questions/tagged/machine-learning", c:"Community", d:"Q&A for specific ML implementation problems.", tags:["discussion","troubleshooting"]},
+  {t:"Cross Validated (Stats SE)", u:"https://stats.stackexchange.com/", c:"Community", d:"Stack Exchange for statistics, ML theory, and data analysis Q&A.", tags:["discussion","statistics"]},
+  {t:"datascience.stackexchange", u:"https://datascience.stackexchange.com/", c:"Community", d:"Q&A focused on applied data science workflows.", tags:["discussion"]},
 
+  // Free Courses
   {t:"fast.ai", u:"https://www.fast.ai/", c:"Free Courses", d:"Practical, code-first deep learning courses.", tags:["course","deep-learning"]},
   {t:"DeepLearning.AI", u:"https://www.deeplearning.ai/", c:"Free Courses", d:"Andrew Ng's courses and specializations.", tags:["course","beginner-friendly"]},
   {t:"Google ML Crash Course", u:"https://developers.google.com/machine-learning/crash-course", c:"Free Courses", d:"Fast, free introduction to core ML concepts.", tags:["course","beginner-friendly"]},
+  {t:"MIT OpenCourseWare: Intro to CS & Programming", u:"https://ocw.mit.edu/courses/6-0001-introduction-to-computer-science-and-programming-in-python-fall-2016/", c:"Free Courses", d:"Solid Python foundations from MIT — free lecture materials.", tags:["course","python","beginner-friendly"]},
+  {t:"Harvard CS109 Data Science", u:"https://cs109.github.io/", c:"Free Courses", d:"Full data science course materials (probability, stats, ML, viz).", tags:["course","data-science"]},
+  {t:"Kaggle Learn", u:"https://www.kaggle.com/learn", c:"Free Courses", d:"Short free micro-courses on Python, SQL, ML, and more.", tags:["course","beginner-friendly"]},
 
+  // Notebooks & Compute
   {t:"Google Colab", u:"https://colab.research.google.com/", c:"Notebooks & Compute", d:"Free hosted notebooks with GPU/TPU access.", tags:["free-gpu","no-signup-barrier"]},
   {t:"Kaggle Kernels", u:"https://www.kaggle.com/code", c:"Notebooks & Compute", d:"Free notebooks pre-loaded with popular datasets.", tags:["free-gpu"]},
   {t:"Try Jupyter", u:"https://jupyter.org/try", c:"Notebooks & Compute", d:"Run Jupyter notebooks in-browser with no install.", tags:["no-signup-barrier"]},
+  {t:"Lightning AI Studios", u:"https://lightning.ai/", c:"Notebooks & Compute", d:"Cloud workspaces for training and shipping ML apps.", tags:["cloud","gpu"]},
 
+  // Newsletters & Blogs
   {t:"Towards Data Science", u:"https://towardsdatascience.com/", c:"Newsletters & Blogs", d:"Community-written articles on practical data science.", tags:["blog"]},
   {t:"The Batch (DeepLearning.AI)", u:"https://www.deeplearning.ai/the-batch/", c:"Newsletters & Blogs", d:"Weekly roundup of AI news and research.", tags:["newsletter"]},
   {t:"Sebastian Raschka's Blog", u:"https://sebastianraschka.com/blog/", c:"Newsletters & Blogs", d:"Deep, well-explained posts on ML fundamentals and research.", tags:["blog","deep-learning"]},
+  {t:"Chip Huyen's Blog", u:"https://huyenchip.com/blog/", c:"Newsletters & Blogs", d:"Production ML systems, MLOps, and applied AI writing.", tags:["blog","mlops"]},
+  {t:"Distill.pub", u:"https://distill.pub/", c:"Newsletters & Blogs", d:"Interactive essays that make ML research clearer.", tags:["blog","research","interactive"]},
 
+  // Dev Tools
   {t:"VS Code", u:"https://code.visualstudio.com/", c:"Dev Tools", d:"The default editor for most data & ML work today.", tags:["editor"]},
   {t:"Weights & Biases Docs", u:"https://docs.wandb.ai/", c:"Dev Tools", d:"Experiment tracking and model monitoring.", tags:["experiment-tracking"]},
   {t:"GitHub", u:"https://github.com/", c:"Dev Tools", d:"Where the code, and most of the ML ecosystem, lives.", tags:["versioning"]},
+  {t:"uv (Astral)", u:"https://docs.astral.sh/uv/", c:"Dev Tools", d:"Extremely fast Python package/project manager.", tags:["python","tooling"]},
+  {t:"Ruff", u:"https://docs.astral.sh/ruff/", c:"Dev Tools", d:"Blazing-fast Python linter and formatter.", tags:["python","tooling"]},
 
-  {t:"Khan Academy: Statistics", u:"https://www.khanacademy.org/math/statistics-probability", c:"Stats & Math", d:"Free, structured stats and probability fundamentals.", tags:["course","beginner-friendly"]},
-  {t:"StatQuest (YouTube)", u:"https://www.youtube.com/@statquest", c:"Stats & Math", d:"Clear, visual explanations of statistics and ML concepts.", tags:["video","beginner-friendly"]},
-  {t:"3Blue1Brown", u:"https://www.3blue1brown.com/", c:"Stats & Math", d:"Beautifully visualized explanations of linear algebra, calculus & neural nets.", tags:["video"]},
-
+  // Career Prep
   {t:"LeetCode: Top SQL 50", u:"https://leetcode.com/studyplan/top-sql-50/", c:"Career Prep", d:"The SQL questions that come up most in interviews.", tags:["practice","sql"]},
   {t:"Interview Query", u:"https://www.interviewquery.com/", c:"Career Prep", d:"Data science and analytics interview question bank.", tags:["practice"]},
+  {t:"StrataScratch", u:"https://www.stratascratch.com/", c:"Career Prep", d:"Real company data science interview questions with SQL/Python.", tags:["practice","sql"]},
+  {t:"Ace the Data Science Interview (site)", u:"https://www.acethedatascienceinterview.com/", c:"Career Prep", d:"Popular resource for DS interview frameworks and questions.", tags:["practice","book"]},
 
+  // Open Data
   {t:"Data.gov", u:"https://data.gov/", c:"Open Data", d:"U.S. government open data catalog.", tags:["free-download"]},
   {t:"World Bank Open Data", u:"https://data.worldbank.org/", c:"Open Data", d:"Global development data, free to explore and download.", tags:["free-download"]},
   {t:"Our World in Data", u:"https://ourworldindata.org/", c:"Open Data", d:"Long-run global datasets with excellent visualizations.", tags:["free-download","interactive"]},
+  {t:"NASA Open Data", u:"https://data.nasa.gov/", c:"Open Data", d:"Earth science, climate, space, and more from NASA.", tags:["free-download","science"]},
+  {t:"European Data Portal", u:"https://data.europa.eu/", c:"Open Data", d:"Open data from EU institutions and member countries.", tags:["free-download"]},
 
+  // Podcasts
   {t:"Data Skeptic", u:"https://dataskeptic.com/", c:"Podcasts", d:"Long-running podcast on data science and ML topics.", tags:["podcast"]},
   {t:"TWIML AI Podcast", u:"https://twimlai.com/", c:"Podcasts", d:"Interviews with ML researchers and practitioners.", tags:["podcast"]},
+  {t:"Data Engineering Podcast", u:"https://www.dataengineeringpodcast.com/", c:"Podcasts", d:"Deep dives on pipelines, warehouses, and data platform design.", tags:["podcast","data-engineering"]},
+  {t:"Practical AI", u:"https://changelog.com/practicalai", c:"Podcasts", d:"Making AI practical for engineering teams.", tags:["podcast"]},
 ];
 
 const CATEGORY_COLORS = {
   "AI Models":"#2ecc71","ML Frameworks":"#e74c3c","Visualization & BI":"#f39c12",
-  "MLOps & Deployment":"#9b59b6","Datasets":"#16a085","Cheat Sheets":"#d35400",
-  "Community":"#2c3e50","Free Courses":"#c0392b","Notebooks & Compute":"#27ae60",
-  "Newsletters & Blogs":"#3498db","Dev Tools":"#8e44ad","Stats & Math":"#e67e22",
-  "Career Prep":"#1abc9c","Open Data":"#2980b9","Podcasts":"#7f8c8d"
+  "MLOps & Deployment":"#9b59b6","Datasets":"#16a085","SQL & Databases":"#2980b9",
+  "Feature Engineering":"#e67e22","Stats & Math":"#d35400","Causal Inference":"#8e44ad",
+  "Experimentation":"#1abc9c","NLP & LLMs":"#3498db","Time Series":"#27ae60",
+  "Ethics & Responsible AI":"#c0392b","Cheat Sheets":"#d35400","Community":"#2c3e50",
+  "Free Courses":"#c0392b","Notebooks & Compute":"#27ae60","Newsletters & Blogs":"#3498db",
+  "Dev Tools":"#8e44ad","Career Prep":"#1abc9c","Open Data":"#2980b9","Podcasts":"#7f8c8d"
 };
 
 // ---- Backend config ----
-// Fill these in (see SETUP.md) to switch from local demo mode to a real,
-// shared Supabase backend. Left as placeholders, the site runs entirely
-// on browser storage instead.
 const SUPABASE_URL = "https://bzxbiyecqpkuekktiwxj.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6eGJpeWVjcXBrdWVra3Rpd3hqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3MTQ4OTIsImV4cCI6MjA5OTI5MDg5Mn0.MLm01LxePxZj-39PlY56AplYQqtYt4mnxOjz_ke3IJ8";
 const BACKEND_ENABLED = SUPABASE_URL.startsWith("http") && SUPABASE_ANON_KEY.length > 20;
@@ -387,9 +744,12 @@ const STORAGE_KEYS = {
   favorites: "webshark_favorites",
   upvotes: "webshark_upvotes",
   dark: "webshark_dark_mode",
-  admin: "webshark_admin_session"
+  admin: "webshark_admin_session",
+  demoUsers: "webshark_demo_users_v1",
+  demoSession: "webshark_demo_session_v1",
+  demoComments: "webshark_demo_comments_v1"
 };
-const ADMIN_PASSCODE = "sharkmod"; // demo-mode only, not real auth
+const ADMIN_PASSCODE = "sharkmod";
 
 function loadJSON(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
@@ -399,18 +759,378 @@ function saveJSON(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { console.error("Storage error", e); }
 }
 
-// `community` is a cache refreshed from Supabase (connected mode) or
-// localStorage (demo mode). Same shape either way so render() doesn't care.
+function toast(msg, ms = 2400) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.classList.remove("show"), ms);
+}
+
+function escapeHTML(s) {
+  const d = document.createElement("div");
+  d.textContent = s == null ? "" : String(s);
+  return d.innerHTML;
+}
+function escapeAttr(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+}
+
+// ---- App state ----
 let community = BACKEND_ENABLED ? [] : loadJSON(STORAGE_KEYS.community, []);
-let favorites = new Set(loadJSON(STORAGE_KEYS.favorites, [])); // always local — personal preference, not shared
-let upvotes = new Set(loadJSON(STORAGE_KEYS.upvotes, []));     // local flag to avoid double-clicking; see SETUP.md caveat
+let favorites = new Set(loadJSON(STORAGE_KEYS.favorites, []));
+let upvotes = new Set(loadJSON(STORAGE_KEYS.upvotes, []));
 let isAdmin = BACKEND_ENABLED ? false : sessionStorage.getItem(STORAGE_KEYS.admin) === "true";
 let activeCategory = "All";
 let activeTag = null;
 let favOnly = false;
+let openCommentsFor = null; // resource id with comments panel open
+let commentsCache = {}; // resourceKey -> [{id, body, username, user_id, created_at}]
+let commentCounts = {}; // resourceKey -> number
+let currentUser = null; // { id, email, username }
+let authMode = "signup"; // signup | login
 
+// ---- Auth helpers ----
+const USERNAME_RE = /^[a-zA-Z0-9_]{3,24}$/;
+
+function setAuthStatus(msg, ok) {
+  const el = document.getElementById("authStatus");
+  el.textContent = msg || "";
+  el.className = ok ? "status-ok" : "status-err";
+}
+
+function updateAuthUI() {
+  const btn = document.getElementById("authToggle");
+  if (currentUser && currentUser.username) {
+    btn.textContent = "@" + currentUser.username;
+    btn.classList.add("user-active");
+    btn.title = "Signed in as @" + currentUser.username + " — click to sign out";
+  } else {
+    btn.textContent = "👤 Sign in";
+    btn.classList.remove("user-active");
+    btn.title = "Optional — only needed to leave comments";
+  }
+}
+
+async function loadProfile(userId) {
+  if (!BACKEND_ENABLED) return null;
+  const { data, error } = await sb.from("profiles").select("username").eq("id", userId).maybeSingle();
+  if (error) { console.error("Profile load", error); return null; }
+  return data;
+}
+
+async function refreshSession() {
+  if (!BACKEND_ENABLED) {
+    const sess = loadJSON(STORAGE_KEYS.demoSession, null);
+    currentUser = sess;
+    // restore admin if same session was admin
+    if (sess && sessionStorage.getItem(STORAGE_KEYS.admin) === "true") isAdmin = true;
+    updateAuthUI();
+    setAdminUI();
+    return;
+  }
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    currentUser = null;
+    isAdmin = false;
+    updateAuthUI();
+    setAdminUI();
+    return;
+  }
+  const profile = await loadProfile(session.user.id);
+  currentUser = {
+    id: session.user.id,
+    email: session.user.email,
+    username: profile ? profile.username : null
+  };
+  // Check admin table
+  const { data: adminRow } = await sb.from("admins").select("user_id").eq("user_id", session.user.id).maybeSingle();
+  isAdmin = !!adminRow;
+  updateAuthUI();
+  setAdminUI();
+}
+
+async function signupUser(username, email, password) {
+  username = username.trim();
+  email = email.trim();
+  if (!USERNAME_RE.test(username)) {
+    return { error: "Username must be 3–24 characters: letters, numbers, underscores." };
+  }
+  if (!email || password.length < 6) {
+    return { error: "Enter a valid email and a password of at least 6 characters." };
+  }
+
+  if (!BACKEND_ENABLED) {
+    const users = loadJSON(STORAGE_KEYS.demoUsers, []);
+    if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+      return { error: "That username is already taken (demo mode)." };
+    }
+    if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+      return { error: "That email is already registered (demo mode)." };
+    }
+    const user = { id: "demo-" + Date.now(), email, password, username };
+    users.push(user);
+    saveJSON(STORAGE_KEYS.demoUsers, users);
+    currentUser = { id: user.id, email, username };
+    saveJSON(STORAGE_KEYS.demoSession, currentUser);
+    return { error: null };
+  }
+
+  const { data, error } = await sb.auth.signUp({ email, password });
+  if (error) return { error: error.message };
+  if (!data.user) return { error: "Signup failed — no user returned." };
+
+  const { error: pErr } = await sb.from("profiles").insert({ id: data.user.id, username });
+  if (pErr) {
+    // Best-effort cleanup message; user may still exist in auth
+    if (pErr.code === "23505") return { error: "That username is already taken." };
+    return { error: "Account created but profile failed: " + pErr.message };
+  }
+  currentUser = { id: data.user.id, email, username };
+  return { error: null };
+}
+
+async function loginUser(email, password) {
+  email = email.trim();
+  if (!email || !password) return { error: "Enter email and password." };
+
+  if (!BACKEND_ENABLED) {
+    const users = loadJSON(STORAGE_KEYS.demoUsers, []);
+    const u = users.find(x => x.email.toLowerCase() === email.toLowerCase() && x.password === password);
+    if (!u) return { error: "Invalid email or password (demo mode)." };
+    currentUser = { id: u.id, email: u.email, username: u.username };
+    saveJSON(STORAGE_KEYS.demoSession, currentUser);
+    return { error: null };
+  }
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) return { error: error.message };
+  const profile = await loadProfile(data.user.id);
+  if (!profile) {
+    return { error: "Logged in, but no username profile found. Contact support or re-register." };
+  }
+  currentUser = { id: data.user.id, email: data.user.email, username: profile.username };
+  const { data: adminRow } = await sb.from("admins").select("user_id").eq("user_id", data.user.id).maybeSingle();
+  isAdmin = !!adminRow;
+  return { error: null };
+}
+
+async function logoutUser() {
+  if (BACKEND_ENABLED) {
+    await sb.auth.signOut();
+  } else {
+    saveJSON(STORAGE_KEYS.demoSession, null);
+    sessionStorage.removeItem(STORAGE_KEYS.admin);
+  }
+  currentUser = null;
+  isAdmin = false;
+  updateAuthUI();
+  setAdminUI();
+  document.getElementById("authPanel").classList.remove("open");
+  document.getElementById("adminPanel").classList.remove("open");
+  toast("Signed out");
+  render();
+}
+
+// ---- Comments ----
+function resourceKeyOf(r) {
+  // Stable key for curated + community resources
+  if (r.dbId) return r.dbId;
+  return r.id; // base-0, base-1, ...
+}
+
+async function loadCommentsFor(resourceKey) {
+  if (BACKEND_ENABLED) {
+    const { data, error } = await sb
+      .from("comments")
+      .select("id, body, user_id, created_at, profiles(username)")
+      .eq("resource_key", resourceKey)
+      .order("created_at", { ascending: true });
+    if (error) {
+      // Fallback if join fails (older clients) — fetch without embed
+      console.warn("Comments join failed, retrying simple select", error);
+      const res2 = await sb.from("comments").select("id, body, user_id, created_at").eq("resource_key", resourceKey).order("created_at", { ascending: true });
+      if (res2.error) { console.error(res2.error); commentsCache[resourceKey] = []; return; }
+      const userIds = [...new Set(res2.data.map(c => c.user_id))];
+      let nameMap = {};
+      if (userIds.length) {
+        const { data: profs } = await sb.from("profiles").select("id, username").in("id", userIds);
+        (profs || []).forEach(p => { nameMap[p.id] = p.username; });
+      }
+      commentsCache[resourceKey] = res2.data.map(c => ({
+        id: c.id, body: c.body, user_id: c.user_id, created_at: c.created_at,
+        username: nameMap[c.user_id] || "user"
+      }));
+      return;
+    }
+    commentsCache[resourceKey] = (data || []).map(c => ({
+      id: c.id,
+      body: c.body,
+      user_id: c.user_id,
+      created_at: c.created_at,
+      username: (c.profiles && c.profiles.username) || "user"
+    }));
+  } else {
+    const all = loadJSON(STORAGE_KEYS.demoComments, []);
+    commentsCache[resourceKey] = all.filter(c => c.resource_key === resourceKey);
+  }
+  commentCounts[resourceKey] = commentsCache[resourceKey].length;
+}
+
+async function refreshCommentCounts() {
+  if (BACKEND_ENABLED) {
+    try {
+      const { data, error } = await sb.from("comment_counts").select("resource_key, count");
+      if (!error && data) {
+        commentCounts = {};
+        data.forEach(row => { commentCounts[row.resource_key] = row.count; });
+        return;
+      }
+    } catch (e) { /* view may not exist yet */ }
+    // Fallback: fetch all comments and count client-side (fine for small scale)
+    const { data, error } = await sb.from("comments").select("resource_key");
+    if (!error && data) {
+      commentCounts = {};
+      data.forEach(c => { commentCounts[c.resource_key] = (commentCounts[c.resource_key] || 0) + 1; });
+    }
+  } else {
+    const all = loadJSON(STORAGE_KEYS.demoComments, []);
+    commentCounts = {};
+    all.forEach(c => { commentCounts[c.resource_key] = (commentCounts[c.resource_key] || 0) + 1; });
+  }
+}
+
+async function postComment(resourceKey, body) {
+  body = body.trim();
+  if (!body) return { error: "Write something first." };
+  if (body.length > 1000) return { error: "Comments max out at 1000 characters." };
+  if (!currentUser || !currentUser.username) {
+    return { error: "Sign in with a username to comment." };
+  }
+
+  if (BACKEND_ENABLED) {
+    const { data, error } = await sb.from("comments").insert({
+      resource_key: resourceKey,
+      user_id: currentUser.id,
+      body
+    }).select("id, body, user_id, created_at").single();
+    if (error) return { error: error.message };
+    if (!commentsCache[resourceKey]) commentsCache[resourceKey] = [];
+    commentsCache[resourceKey].push({
+      id: data.id, body: data.body, user_id: data.user_id,
+      created_at: data.created_at, username: currentUser.username
+    });
+  } else {
+    const all = loadJSON(STORAGE_KEYS.demoComments, []);
+    const row = {
+      id: "c-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
+      resource_key: resourceKey,
+      user_id: currentUser.id,
+      username: currentUser.username,
+      body,
+      created_at: new Date().toISOString()
+    };
+    all.push(row);
+    saveJSON(STORAGE_KEYS.demoComments, all);
+    if (!commentsCache[resourceKey]) commentsCache[resourceKey] = [];
+    commentsCache[resourceKey].push(row);
+  }
+  commentCounts[resourceKey] = (commentCounts[resourceKey] || 0) + 1;
+  return { error: null };
+}
+
+async function deleteComment(resourceKey, commentId) {
+  if (BACKEND_ENABLED) {
+    const { error } = await sb.from("comments").delete().eq("id", commentId);
+    if (error) return { error: error.message };
+  } else {
+    let all = loadJSON(STORAGE_KEYS.demoComments, []);
+    all = all.filter(c => c.id !== commentId);
+    saveJSON(STORAGE_KEYS.demoComments, all);
+  }
+  commentsCache[resourceKey] = (commentsCache[resourceKey] || []).filter(c => c.id !== commentId);
+  commentCounts[resourceKey] = Math.max(0, (commentCounts[resourceKey] || 1) - 1);
+  return { error: null };
+}
+
+function formatTime(iso) {
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })
+      + " · " + d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  } catch (e) { return ""; }
+}
+
+// ---- Share ----
+function shareUrlFor(r) {
+  const u = new URL(window.location.href);
+  u.searchParams.set("r", resourceKeyOf(r));
+  u.hash = "";
+  return u.toString();
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); return true; }
+    catch (e2) { return false; }
+    finally { document.body.removeChild(ta); }
+  }
+}
+
+function openShareMenu(btn, r) {
+  document.querySelectorAll(".share-menu.open").forEach(m => m.classList.remove("open"));
+  const menu = btn.parentElement.querySelector(".share-menu");
+  menu.classList.toggle("open");
+  menu.querySelectorAll("button").forEach(b => {
+    b.onclick = async (e) => {
+      e.stopPropagation();
+      const action = b.dataset.action;
+      const url = shareUrlFor(r);
+      const text = r.t + " — via WebShark Library.AI";
+      if (action === "copy") {
+        const ok = await copyText(url);
+        toast(ok ? "Link copied!" : "Could not copy — select the URL manually");
+      } else if (action === "native") {
+        if (navigator.share) {
+          try { await navigator.share({ title: r.t, text, url }); }
+          catch (err) { /* user cancelled */ }
+        } else {
+          const ok = await copyText(url);
+          toast(ok ? "Link copied (share sheet not available)" : "Copy failed");
+        }
+      } else if (action === "x") {
+        window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(url), "_blank", "noopener");
+      } else if (action === "linkedin") {
+        window.open("https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(url), "_blank", "noopener");
+      } else if (action === "reddit") {
+        window.open("https://www.reddit.com/submit?url=" + encodeURIComponent(url) + "&title=" + encodeURIComponent(text), "_blank", "noopener");
+      }
+      menu.classList.remove("open");
+    };
+  });
+}
+
+// Close share menus on outside click
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".share-wrap")) {
+    document.querySelectorAll(".share-menu.open").forEach(m => m.classList.remove("open"));
+  }
+});
+
+// ---- Backend resources ----
 function dbRowToResource(row) {
-  return { t: row.title, u: row.url, c: row.category, d: row.description, tags: row.tags || [], status: row.status, id: "com-" + row.id, dbId: row.id, votes: row.votes };
+  return {
+    t: row.title, u: row.url, c: row.category, d: row.description,
+    tags: row.tags || [], status: row.status,
+    id: "com-" + row.id, dbId: row.id, votes: row.votes
+  };
 }
 
 async function refreshCommunityApproved() {
@@ -421,8 +1141,7 @@ async function refreshCommunityApproved() {
 }
 
 async function refreshCommunityAll() {
-  // Admin-only: relies on the RLS policy that lets logged-in admins see every status
-  if (!BACKEND_ENABLED) return community; // demo mode already stores everything in `community`
+  if (!BACKEND_ENABLED) return community;
   const { data, error } = await sb.from("resources").select("*").order("created_at", { ascending: false });
   if (error) { console.error("Supabase admin fetch error", error); return []; }
   return data.map(dbRowToResource);
@@ -434,19 +1153,6 @@ function allResources() {
   return [...base, ...approved];
 }
 
-function renderChips() {
-  const cats = ["All", ...Object.keys(CATEGORY_COLORS)];
-  const row = document.getElementById("chipRow");
-  row.innerHTML = "";
-  cats.forEach(cat => {
-    const chip = document.createElement("button");
-    chip.className = "chip" + (activeCategory === cat ? " active" : "");
-    chip.textContent = cat;
-    chip.onclick = () => { activeCategory = cat; renderChips(); render(); };
-    row.appendChild(chip);
-  });
-}
-
 function populateCategorySelect() {
   const sel = document.getElementById("subCategory");
   sel.innerHTML = "";
@@ -455,6 +1161,93 @@ function populateCategorySelect() {
     opt.value = cat; opt.textContent = cat;
     sel.appendChild(opt);
   });
+}
+
+function renderChips() {
+  const cats = ["All", ...Object.keys(CATEGORY_COLORS)];
+  const row = document.getElementById("chipRow");
+  row.innerHTML = "";
+  cats.forEach(cat => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "chip" + (activeCategory === cat ? " active" : "");
+    chip.textContent = cat;
+    chip.onclick = () => { activeCategory = cat; renderChips(); render(); };
+    row.appendChild(chip);
+  });
+}
+
+function renderCommentsHTML(r) {
+  const key = resourceKeyOf(r);
+  const list = commentsCache[key] || [];
+  let items = "";
+  if (list.length === 0) {
+    items = '<p style="opacity:0.6;font-size:0.85em;margin:0 0 8px;">No comments yet — start the conversation.</p>';
+  } else {
+    items = list.map(c => {
+      const canDelete = currentUser && currentUser.id === c.user_id;
+      return `<div class="comment-item" data-cid="${escapeAttr(c.id)}">
+        <div class="comment-meta">
+          <span><span class="username">@${escapeHTML(c.username)}</span> · ${escapeHTML(formatTime(c.created_at))}</span>
+          ${canDelete ? `<button type="button" class="comment-delete" data-del="${escapeAttr(c.id)}">Delete</button>` : ""}
+        </div>
+        <div class="comment-body">${escapeHTML(c.body)}</div>
+      </div>`;
+    }).join("");
+  }
+
+  let compose;
+  if (currentUser && currentUser.username) {
+    compose = `<div class="comment-compose">
+      <textarea class="comment-input" placeholder="Share a tip, caveat, or alternative…" maxlength="1000"></textarea>
+      <button type="button" class="btn btn-primary comment-post">Post</button>
+    </div>`;
+  } else {
+    compose = `<div class="comment-gate">
+      Create a free account with a username to leave a comment.
+      <button type="button" class="btn btn-ghost btn-sm open-auth-from-comment">Sign in</button>
+    </div>`;
+  }
+
+  return `<div class="comment-list">${items}</div>${compose}`;
+}
+
+function bindCommentPanel(card, r) {
+  const panel = card.querySelector(".comments-panel");
+  if (!panel || !panel.classList.contains("open")) return;
+  const key = resourceKeyOf(r);
+
+  panel.querySelectorAll(".comment-delete").forEach(btn => {
+    btn.onclick = async () => {
+      if (!confirm("Delete this comment?")) return;
+      const { error } = await deleteComment(key, btn.dataset.del);
+      if (error) { toast(error); return; }
+      toast("Comment deleted");
+      await loadCommentsFor(key);
+      render();
+    };
+  });
+
+  const postBtn = panel.querySelector(".comment-post");
+  if (postBtn) {
+    postBtn.onclick = async () => {
+      const ta = panel.querySelector(".comment-input");
+      const { error } = await postComment(key, ta.value);
+      if (error) { toast(error); return; }
+      ta.value = "";
+      toast("Comment posted");
+      await loadCommentsFor(key);
+      render();
+    };
+  }
+
+  const gateBtn = panel.querySelector(".open-auth-from-comment");
+  if (gateBtn) {
+    gateBtn.onclick = () => {
+      document.getElementById("authPanel").classList.add("open");
+      document.getElementById("authPanel").scrollIntoView({ behavior: "smooth", block: "center" });
+    };
+  }
 }
 
 function render() {
@@ -476,45 +1269,73 @@ function render() {
     );
   }
 
+  const totalComments = Object.values(commentCounts).reduce((a, b) => a + b, 0);
   document.getElementById("statTotal").textContent = allResources().length;
   document.getElementById("statCategories").textContent = Object.keys(CATEGORY_COLORS).length;
   document.getElementById("statCommunity").textContent = community.filter(r => r.status === "approved").length;
   document.getElementById("statFavorites").textContent = favorites.size;
+  document.getElementById("statComments").textContent = totalComments;
 
   if (items.length === 0) { empty.style.display = "block"; return; }
   empty.style.display = "none";
 
+  const highlightKey = new URLSearchParams(window.location.search).get("r");
+
   items.forEach((r, idx) => {
     const card = document.createElement("div");
     card.className = "resource-card";
+    card.dataset.rkey = resourceKeyOf(r);
     card.style.borderLeftColor = CATEGORY_COLORS[r.c] || "#3498db";
     card.style.animationDelay = (Math.min(idx, 20) * 0.03) + "s";
+    if (highlightKey && resourceKeyOf(r) === highlightKey) card.classList.add("highlighted");
 
     const tagsHTML = (r.tags || []).map(tag =>
-      `<span class="tag-pill${activeTag === tag ? ' active' : ''}" data-tag="${escapeAttr(tag)}">${escapeHTML(tag)}</span>`
+      `<span class="tag-pill${activeTag === tag ? " active" : ""}" data-tag="${escapeAttr(tag)}">${escapeHTML(tag)}</span>`
     ).join("");
 
     const upvoted = upvotes.has(r.id);
     let voteCount;
     if (typeof r.votes === "number") {
-      voteCount = r.votes; // real shared count from the backend
+      voteCount = r.votes;
     } else {
-      const baseVotes = (r.t.length * 3 + (r.c.length * 2)) % 40 + 5; // stable pseudo-seed, demo mode only
+      const baseVotes = (r.t.length * 3 + (r.c.length * 2)) % 40 + 5;
       voteCount = baseVotes + (upvoted ? 1 : 0);
     }
 
+    const cCount = commentCounts[resourceKeyOf(r)] || 0;
+    const commentsOpen = openCommentsFor === r.id;
+
     card.innerHTML = `
-      <span class="category-tag" style="color:${CATEGORY_COLORS[r.c] || '#3498db'}">${r.c}${r.submitted ? '<span class="submitted-badge">Community</span>' : ''}</span>
+      <span class="category-tag" style="color:${CATEGORY_COLORS[r.c] || "#3498db"}">${escapeHTML(r.c)}${r.submitted ? '<span class="submitted-badge">Community</span>' : ""}</span>
       <h3>${escapeHTML(r.t)}</h3>
       <p class="desc">${escapeHTML(r.d)}</p>
       <div class="tag-row">${tagsHTML}</div>
       <div class="card-footer">
         <a href="${escapeAttr(r.u)}" class="cta-link" target="_blank" rel="noopener">Visit →</a>
-        <button class="upvote-btn${upvoted ? ' upvoted' : ''}" data-id="${r.id}"><span class="arrow">▲</span> <span class="count">${voteCount}</span></button>
+        <div class="card-actions">
+          <button type="button" class="icon-btn upvote-btn${upvoted ? " upvoted" : ""}" data-id="${escapeAttr(r.id)}" title="Upvote">
+            <span class="arrow">▲</span> <span class="count">${voteCount}</span>
+          </button>
+          <button type="button" class="icon-btn comment-toggle${commentsOpen ? " open" : ""}" title="Comments">
+            💬 <span class="ccount">${cCount}</span>
+          </button>
+          <div class="share-wrap">
+            <button type="button" class="icon-btn share-btn" title="Share">↗ Share</button>
+            <div class="share-menu">
+              <button type="button" data-action="copy">📋 Copy link</button>
+              <button type="button" data-action="native">📲 Share…</button>
+              <button type="button" data-action="x">𝕏 Post to X</button>
+              <button type="button" data-action="linkedin">in LinkedIn</button>
+              <button type="button" data-action="reddit">👽 Reddit</button>
+            </div>
+          </div>
+        </div>
       </div>
+      <div class="comments-panel${commentsOpen ? " open" : ""}">${commentsOpen ? renderCommentsHTML(r) : ""}</div>
     `;
 
     const star = document.createElement("button");
+    star.type = "button";
     star.className = "star-btn" + (favorites.has(r.id) ? " favorited" : "");
     star.innerHTML = favorites.has(r.id) ? "★" : "☆";
     star.title = "Toggle favorite";
@@ -522,6 +1343,7 @@ function render() {
       if (favorites.has(r.id)) favorites.delete(r.id); else favorites.add(r.id);
       saveJSON(STORAGE_KEYS.favorites, [...favorites]);
       star.classList.add("pop");
+      toast(favorites.has(r.id) ? "Added to favorites" : "Removed from favorites");
       render();
     };
     card.appendChild(star);
@@ -536,11 +1358,10 @@ function render() {
 
     card.querySelector(".upvote-btn").onclick = async (e) => {
       const btn = e.currentTarget;
-      if (upvotes.has(r.id)) { return; } // already upvoted this session/browser — no un-vote, keeps it simple and honest
+      if (upvotes.has(r.id)) return;
       upvotes.add(r.id);
       saveJSON(STORAGE_KEYS.upvotes, [...upvotes]);
       btn.querySelector(".arrow").classList.add("pop");
-
       if (BACKEND_ENABLED && r.dbId) {
         const { error } = await sb.rpc("upvote_resource", { resource_id: r.dbId });
         if (error) console.error("Upvote failed", error);
@@ -549,19 +1370,101 @@ function render() {
       render();
     };
 
+    card.querySelector(".comment-toggle").onclick = async () => {
+      if (openCommentsFor === r.id) {
+        openCommentsFor = null;
+        render();
+        return;
+      }
+      openCommentsFor = r.id;
+      await loadCommentsFor(resourceKeyOf(r));
+      render();
+    };
+
+    card.querySelector(".share-btn").onclick = (e) => {
+      e.stopPropagation();
+      openShareMenu(e.currentTarget, r);
+    };
+
+    if (commentsOpen) bindCommentPanel(card, r);
+
     grid.appendChild(card);
   });
+
+  // Deep-link scroll once
+  if (highlightKey && !render._scrolledDeep) {
+    const el = grid.querySelector(`[data-rkey="${CSS.escape(highlightKey)}"]`);
+    if (el) {
+      render._scrolledDeep = true;
+      setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 200);
+    }
+  }
 }
 
-function escapeHTML(s) {
-  const d = document.createElement("div");
-  d.textContent = s;
-  return d.innerHTML;
-}
-function escapeAttr(s) {
-  return String(s).replace(/"/g, "&quot;");
+// ---- Auth panel UI ----
+function setAuthMode(mode) {
+  authMode = mode;
+  document.getElementById("tabSignup").classList.toggle("active", mode === "signup");
+  document.getElementById("tabLogin").classList.toggle("active", mode === "login");
+  document.getElementById("signupForm").style.display = mode === "signup" ? "block" : "none";
+  document.getElementById("loginForm").style.display = mode === "login" ? "block" : "none";
+  document.getElementById("authTitle").textContent = mode === "signup" ? "Create a free account" : "Log in";
+  setAuthStatus("");
 }
 
+document.getElementById("tabSignup").onclick = () => setAuthMode("signup");
+document.getElementById("tabLogin").onclick = () => setAuthMode("login");
+document.getElementById("cancelAuth").onclick = () => document.getElementById("authPanel").classList.remove("open");
+document.getElementById("cancelAuth2").onclick = () => document.getElementById("authPanel").classList.remove("open");
+
+document.getElementById("authToggle").onclick = async () => {
+  if (currentUser && currentUser.username) {
+    if (confirm("Sign out of @" + currentUser.username + "?")) await logoutUser();
+    return;
+  }
+  const panel = document.getElementById("authPanel");
+  panel.classList.toggle("open");
+  if (panel.classList.contains("open")) {
+    setAuthMode("signup");
+    panel.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+};
+
+document.getElementById("signupBtn").onclick = async () => {
+  const username = document.getElementById("suUsername").value;
+  const email = document.getElementById("suEmail").value;
+  const p1 = document.getElementById("suPassword").value;
+  const p2 = document.getElementById("suPassword2").value;
+  if (p1 !== p2) { setAuthStatus("Passwords do not match."); return; }
+  const btn = document.getElementById("signupBtn");
+  btn.disabled = true;
+  const { error } = await signupUser(username, email, p1);
+  btn.disabled = false;
+  if (error) { setAuthStatus(error); return; }
+  setAuthStatus("Welcome, @" + currentUser.username + "! You can comment on resources now.", true);
+  updateAuthUI();
+  toast("Account created — you're signed in as @" + currentUser.username);
+  setTimeout(() => document.getElementById("authPanel").classList.remove("open"), 900);
+  render();
+};
+
+document.getElementById("loginBtn").onclick = async () => {
+  const email = document.getElementById("liEmail").value;
+  const password = document.getElementById("liPassword").value;
+  const btn = document.getElementById("loginBtn");
+  btn.disabled = true;
+  const { error } = await loginUser(email, password);
+  btn.disabled = false;
+  if (error) { setAuthStatus(error); return; }
+  setAuthStatus("Welcome back, @" + currentUser.username + "!", true);
+  updateAuthUI();
+  setAdminUI();
+  toast("Signed in as @" + currentUser.username);
+  setTimeout(() => document.getElementById("authPanel").classList.remove("open"), 700);
+  render();
+};
+
+// ---- Search / favorites / dark ----
 document.getElementById("searchInput").addEventListener("input", render);
 document.getElementById("favToggle").addEventListener("click", function() {
   favOnly = !favOnly;
@@ -572,7 +1475,7 @@ document.getElementById("favToggle").addEventListener("click", function() {
 const darkToggle = document.getElementById("darkToggle");
 function applyDarkMode(on) {
   document.body.classList.toggle("dark", on);
-  darkToggle.textContent = on ? "☀️ Light mode" : "🌙 Dark mode";
+  darkToggle.textContent = on ? "☀️ Light" : "🌙 Dark";
 }
 applyDarkMode(loadJSON(STORAGE_KEYS.dark, false));
 darkToggle.addEventListener("click", () => {
@@ -581,10 +1484,11 @@ darkToggle.addEventListener("click", () => {
   saveJSON(STORAGE_KEYS.dark, isDark);
 });
 
+// ---- Submit resource ----
 const submitPanel = document.getElementById("submitPanel");
 document.getElementById("openSubmit").addEventListener("click", () => {
   submitPanel.classList.add("open");
-  submitPanel.scrollIntoView({behavior: "smooth", block: "center"});
+  submitPanel.scrollIntoView({ behavior: "smooth", block: "center" });
 });
 document.getElementById("cancelSubmit").addEventListener("click", () => {
   submitPanel.classList.remove("open");
@@ -601,12 +1505,12 @@ document.getElementById("submitResource").addEventListener("click", async () => 
 
   if (!title || !url || !desc) {
     status.textContent = "Please fill in a title, URL, and short description.";
-    status.className = "error";
+    status.className = "status-err";
     return;
   }
   try { new URL(url); } catch (e) {
     status.textContent = "That URL doesn't look valid — include https://";
-    status.className = "error";
+    status.className = "status-err";
     return;
   }
 
@@ -614,60 +1518,78 @@ document.getElementById("submitResource").addEventListener("click", async () => 
     const { error } = await sb.from("resources").insert({ title, url, category, description: desc, tags, status: "pending" });
     if (error) {
       status.textContent = "Something went wrong submitting that — please try again.";
-      status.className = "error";
+      status.className = "status-err";
       console.error(error);
       return;
     }
   } else {
-    community.push({t: title, u: url, c: category, d: desc, tags, status: "pending"});
+    community.push({ t: title, u: url, c: category, d: desc, tags, status: "pending" });
     saveJSON(STORAGE_KEYS.community, community);
   }
 
   status.textContent = "Submitted! It'll appear in the library once approved.";
-  status.className = "success";
+  status.className = "status-ok";
   document.getElementById("subTitle").value = "";
   document.getElementById("subUrl").value = "";
   document.getElementById("subDesc").value = "";
   document.getElementById("subTags").value = "";
+  toast("Thanks — resource submitted for review");
   if (isAdmin) await renderAdmin();
   render();
 });
 
-// Admin / moderation
+// ---- Admin ----
 const adminPanel = document.getElementById("adminPanel");
 const adminToggle = document.getElementById("adminToggle");
 const adminLoginForm = document.getElementById("adminLoginForm");
 const adminNote = document.getElementById("adminNote");
-let adminAllCache = []; // full (all-status) list, admin view only
+let adminAllCache = [];
 
 function setAdminUI() {
   adminToggle.textContent = isAdmin ? "🛠️ Admin (on)" : "🛠️ Admin";
   if (BACKEND_ENABLED) {
-    adminNote.textContent = "Moderation here is backed by real Supabase Auth login — only accounts listed in the `admins` table can approve or reject.";
+    adminNote.textContent = "Moderation uses Supabase Auth — only accounts in the admins table can approve or reject.";
   }
 }
 
 async function openAdminPanel() {
   adminPanel.classList.add("open");
-  adminPanel.scrollIntoView({behavior: "smooth", block: "center"});
+  adminPanel.scrollIntoView({ behavior: "smooth", block: "center" });
   await renderAdmin();
 }
 
 adminToggle.addEventListener("click", async () => {
   if (isAdmin) {
-    isAdmin = false;
-    if (BACKEND_ENABLED) { await sb.auth.signOut(); }
-    else { sessionStorage.removeItem(STORAGE_KEYS.admin); }
+    // Don't fully sign out community user — only leave admin panel / demo admin flag
+    if (!BACKEND_ENABLED) {
+      isAdmin = false;
+      sessionStorage.removeItem(STORAGE_KEYS.admin);
+    } else {
+      // Keep user session; just close admin view
+      adminPanel.classList.remove("open");
+      setAdminUI();
+      return;
+    }
     adminPanel.classList.remove("open");
     setAdminUI();
     return;
   }
 
   if (BACKEND_ENABLED) {
+    if (currentUser && isAdmin) {
+      await openAdminPanel();
+      return;
+    }
+    // If already logged in as admin via session
+    await refreshSession();
+    if (isAdmin) {
+      await openAdminPanel();
+      return;
+    }
     adminPanel.classList.add("open");
     adminLoginForm.style.display = "block";
     document.getElementById("adminList").innerHTML = "";
-    adminPanel.scrollIntoView({behavior: "smooth", block: "center"});
+    adminPanel.scrollIntoView({ behavior: "smooth", block: "center" });
   } else {
     const code = prompt("Admin passcode (demo only):");
     if (code === ADMIN_PASSCODE) {
@@ -690,12 +1612,17 @@ if (BACKEND_ENABLED) {
 
     const { error } = await sb.auth.signInWithPassword({ email, password });
     if (error) {
-      errEl.textContent = "Login failed — check your email/password, and that this account is in the admins table.";
+      errEl.textContent = "Login failed — check credentials and admins table membership.";
       return;
     }
-    isAdmin = true;
+    await refreshSession();
+    if (!isAdmin) {
+      errEl.textContent = "Logged in, but this account is not in the admins table.";
+      return;
+    }
     adminLoginForm.style.display = "none";
     setAdminUI();
+    updateAuthUI();
     await renderAdmin();
   });
 }
@@ -709,7 +1636,7 @@ async function renderAdmin() {
     adminAllCache = await refreshCommunityAll();
     pending = adminAllCache.filter(r => r.status === "pending");
   } else {
-    pending = community.map((r, i) => ({...r, id: "com-" + i})).filter(r => r.status === "pending");
+    pending = community.map((r, i) => ({ ...r, id: "com-" + i })).filter(r => r.status === "pending");
   }
 
   if (pending.length === 0) {
@@ -727,8 +1654,8 @@ async function renderAdmin() {
         <small>${escapeHTML(r.d)}</small>
       </div>
       <div class="admin-actions">
-        <button class="btn btn-approve" data-id="${r.id}" data-dbid="${r.dbId || ''}" data-action="approve">Approve</button>
-        <button class="btn btn-reject" data-id="${r.id}" data-dbid="${r.dbId || ''}" data-action="reject">Reject</button>
+        <button class="btn btn-approve" data-id="${escapeAttr(r.id)}" data-dbid="${escapeAttr(r.dbId || "")}" data-action="approve" type="button">Approve</button>
+        <button class="btn btn-reject" data-id="${escapeAttr(r.id)}" data-dbid="${escapeAttr(r.dbId || "")}" data-action="reject" type="button">Reject</button>
       </div>
     `;
     list.appendChild(row);
@@ -737,7 +1664,6 @@ async function renderAdmin() {
     btn.onclick = async () => {
       const action = btn.getAttribute("data-action");
       const newStatus = action === "approve" ? "approved" : "rejected";
-
       if (BACKEND_ENABLED) {
         const dbId = btn.getAttribute("data-dbid");
         const { error } = await sb.from("resources").update({ status: newStatus }).eq("id", dbId);
@@ -748,23 +1674,43 @@ async function renderAdmin() {
         community[idx].status = newStatus;
         saveJSON(STORAGE_KEYS.community, community);
       }
+      toast(newStatus === "approved" ? "Approved" : "Rejected");
       await renderAdmin();
       render();
     };
   });
 }
 
-// Demo-mode banner
+// ---- Init ----
 if (!BACKEND_ENABLED) {
   document.getElementById("demoBanner").classList.add("show");
 }
 
-// Init
+if (BACKEND_ENABLED) {
+  sb.auth.onAuthStateChange(async () => {
+    await refreshSession();
+    render();
+  });
+}
+
 async function init() {
   populateCategorySelect();
   renderChips();
+  await refreshSession();
   setAdminUI();
   await refreshCommunityApproved();
+  await refreshCommentCounts();
+
+  // Deep-link: open comments if ?r= present
+  const deep = new URLSearchParams(window.location.search).get("r");
+  if (deep) {
+    const match = allResources().find(r => resourceKeyOf(r) === deep);
+    if (match) {
+      openCommentsFor = match.id;
+      await loadCommentsFor(deep);
+    }
+  }
+
   if (isAdmin) { adminPanel.classList.add("open"); await renderAdmin(); }
   render();
 }
